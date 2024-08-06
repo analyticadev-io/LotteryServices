@@ -20,6 +20,7 @@ builder.Services.AddDbContext<LoteriaDbContext>(options =>
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
 builder.Services.AddScoped<ILogin, ServiceLogin>();
+builder.Services.AddScoped<ISorteo, ServiceSorteo>();
 
 
 builder.Services.AddSingleton<Utilidades>();
@@ -35,13 +36,23 @@ builder.Services.AddAuthentication(config =>
     config.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuerSigningKey = true,
-        ValidateIssuer = true,
+        ValidateIssuer = false,
         ValidateAudience = false,
         ValidateLifetime = true,
         ClockSkew = TimeSpan.Zero,
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]!))
     };
 });
+
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("NewPolicy", app =>
+    {
+        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+    });
+});
+
 
 var app = builder.Build();
 
@@ -50,8 +61,33 @@ app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseRouting();
+app.UseCors("NewPolicy");
 app.UseAuthentication();
 app.UseAuthorization();
+
+/**********************************************/
+//TokenContext debugger
+/**********************************************/
+
+//app.Use(async (context, next) =>
+//{
+//    var token = context.Request.Headers["Authorization"].ToString();
+//    Console.WriteLine("Token recibido: " + token); // O usa un logger para registrar el token
+
+//    // Verifica si el token está vacío o tiene problemas
+//    if (string.IsNullOrEmpty(token))
+//    {
+//        Console.WriteLine("No se recibió token.");
+//    }
+//    else if (!token.StartsWith("Bearer "))
+//    {
+//        Console.WriteLine("Token no tiene el formato Bearer.");
+//    }
+
+//    await next();
+//});
+
+
 
 app.MapControllers(); // Map controller routes
 
