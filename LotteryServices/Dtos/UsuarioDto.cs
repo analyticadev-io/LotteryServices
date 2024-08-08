@@ -15,5 +15,6 @@ namespace LotteryServices.Dtos
         public DateTime? FechaRegistro { get; set; }
 
         public virtual ICollection<Boleto> Boletos { get; } = new List<Boleto>();
+        public virtual ICollection<Rol> Rol { get; } = new List<Rol>();
     }
 }
