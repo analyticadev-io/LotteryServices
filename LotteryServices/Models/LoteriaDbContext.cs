@@ -21,19 +21,24 @@ public partial class LoteriaDbContext : DbContext
 
     public virtual DbSet<NumerosSorteo> NumerosSorteos { get; set; }
 
+    public virtual DbSet<Permiso> Permisos { get; set; }
+
+    public virtual DbSet<Rol> Rols { get; set; }
+
     public virtual DbSet<Sorteo> Sorteos { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        => optionsBuilder.UseSqlServer("Server=DESKTOP-TLQ4DNO;Database=LoteriaDB;Trusted_Connection=True;TrustServerCertificate=true");
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Boleto>(entity =>
         {
             entity.HasKey(e => e.BoletoId).HasName("PK__Boletos__C5AF44348C3A30AB");
+
+            entity.HasIndex(e => e.SorteoId, "IX_Boletos_SorteoID");
+
+            entity.HasIndex(e => e.UsuarioId, "IX_Boletos_UsuarioID");
 
             entity.Property(e => e.BoletoId).HasColumnName("BoletoID");
             entity.Property(e => e.FechaCompra)
@@ -57,6 +62,8 @@ public partial class LoteriaDbContext : DbContext
         {
             entity.HasKey(e => e.NumeroBoletoId).HasName("PK__NumerosB__CF017B1BAA2D14AC");
 
+            entity.HasIndex(e => e.BoletoId, "IX_NumerosBoletos_BoletoID");
+
             entity.Property(e => e.NumeroBoletoId).HasColumnName("NumeroBoletoID");
             entity.Property(e => e.BoletoId).HasColumnName("BoletoID");
 
@@ -70,6 +77,8 @@ public partial class LoteriaDbContext : DbContext
         {
             entity.HasKey(e => e.NumeroSorteoId).HasName("PK__NumerosS__C7283F19987C77E6");
 
+            entity.HasIndex(e => e.SorteoId, "IX_NumerosSorteos_SorteoID");
+
             entity.Property(e => e.NumeroSorteoId).HasColumnName("NumeroSorteoID");
             entity.Property(e => e.SorteoId).HasColumnName("SorteoID");
 
@@ -77,6 +86,45 @@ public partial class LoteriaDbContext : DbContext
                 .HasForeignKey(d => d.SorteoId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__NumerosSo__Sorte__44FF419A");
+        });
+
+        modelBuilder.Entity<Permiso>(entity =>
+        {
+            entity.HasKey(e => e.PermisoId).HasName("PK__Permiso__96E0C723B9F1774B");
+
+            entity.ToTable("Permiso");
+
+            entity.Property(e => e.Descripcion)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+        });
+
+        modelBuilder.Entity<Rol>(entity =>
+        {
+            entity.HasKey(e => e.RolId).HasName("PK__Rol__F92302F1BC274A1A");
+
+            entity.ToTable("Rol");
+
+            entity.Property(e => e.Nombre)
+                .HasMaxLength(100)
+                .IsUnicode(false);
+
+            entity.HasMany(d => d.Permisos).WithMany(p => p.Rols)
+                .UsingEntity<Dictionary<string, object>>(
+                    "RolPermiso",
+                    r => r.HasOne<Permiso>().WithMany()
+                        .HasForeignKey("PermisoId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__RolPermis__Permi__2739D489"),
+                    l => l.HasOne<Rol>().WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__RolPermis__RolId__2645B050"),
+                    j =>
+                    {
+                        j.HasKey("RolId", "PermisoId").HasName("PK__RolPermi__D04D0E83B555BC8B");
+                        j.ToTable("RolPermiso");
+                    });
         });
 
         modelBuilder.Entity<Sorteo>(entity =>
@@ -100,6 +148,23 @@ public partial class LoteriaDbContext : DbContext
                 .HasDefaultValueSql("(getdate())")
                 .HasColumnType("datetime");
             entity.Property(e => e.Nombre).HasMaxLength(100);
+
+            entity.HasMany(d => d.Rols).WithMany(p => p.Usuarios)
+                .UsingEntity<Dictionary<string, object>>(
+                    "UsuarioRol",
+                    r => r.HasOne<Rol>().WithMany()
+                        .HasForeignKey("RolId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__UsuarioRo__RolId__2B0A656D"),
+                    l => l.HasOne<Usuario>().WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.ClientSetNull)
+                        .HasConstraintName("FK__UsuarioRo__Usuar__2A164134"),
+                    j =>
+                    {
+                        j.HasKey("UsuarioId", "RolId").HasName("PK__UsuarioR__24AFD797599EC1E0");
+                        j.ToTable("UsuarioRol");
+                    });
         });
 
         OnModelCreatingPartial(modelBuilder);
