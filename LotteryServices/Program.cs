@@ -21,6 +21,7 @@ builder.Services.AddDbContext<LoteriaDbContext>(options =>
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
 builder.Services.AddScoped<ILogin, ServiceLogin>();
 builder.Services.AddScoped<ISorteo, ServiceSorteo>();
+builder.Services.AddScoped<IRol, ServiceRol>();
 
 
 builder.Services.AddSingleton<Utilidades>();
