@@ -18,7 +18,9 @@ namespace LotteryServices.Services
 
         public async Task<IEnumerable<Usuario>> GetUsuariosAsync()
         {
-            return await _context.Usuarios.ToListAsync();
+            return await _context.Usuarios
+                .Include(u => u.Rols) 
+                .ToListAsync();       
         }
 
         public async Task<Usuario> GetUsuarioByIdAsync(int id)

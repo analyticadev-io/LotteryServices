@@ -17,7 +17,28 @@ namespace LotteryServices.Services
             _utilidades = utilidades;
         }
 
-        public async Task<(bool IsSuccess, string Token)> LoginAsync(LoginDto loginDto)
+        //public async Task<(bool IsSuccess, string Token)> LoginAsync(LoginDto loginDto)
+        //{
+        //    try
+        //    {
+        //        var user = await _context.Usuarios
+        //            .FirstOrDefaultAsync(u => u.NombreUsuario == loginDto.NombreUsuario
+        //                                      && u.Contrasena == _utilidades.EncriptarSHA256(loginDto.Contrasena));
+        //        if (user == null)
+        //        {
+        //            return (false, "");        //        }
+        //        // Assuming GenerarJwt method generates a JWT token for the user
+        //        string token = _utilidades.GenerarJwt(user);
+        //        return (true, token);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        // Handle or log the exception appropriately
+        //        throw new InvalidOperationException("An error occurred during login.", ex);
+        //    }
+        //}
+
+        public async Task<(bool IsSuccess, AuthResponseDto AuthResponse)> LoginAsync(LoginDto loginDto)
         {
             try
             {
@@ -27,20 +48,34 @@ namespace LotteryServices.Services
 
                 if (user == null)
                 {
-                    return (false, "");
+                    return (false, null);
                 }
 
-                // Assuming GenerarJwt method generates a JWT token for the user
+                // Suponiendo que el método GenerarJwt genera un token JWT para el usuario
                 string token = _utilidades.GenerarJwt(user);
 
-                return (true, token);
+                var userDto = new UsuarioDto
+                {
+                    UsuarioId = user.UsuarioId,
+                    NombreUsuario = user.NombreUsuario,
+                    Email = user.Email
+                    // Mapear otras propiedades del usuario si es necesario
+                };
+
+                var authResponse = new AuthResponseDto
+                {
+                    Token = token,
+                    Usuario = userDto
+                };
+
+                return (true, authResponse);
             }
             catch (Exception ex)
             {
-                // Handle or log the exception appropriately
-                throw new InvalidOperationException("An error occurred during login.", ex);
+                throw new InvalidOperationException("Ocurrió un error durante el inicio de sesión.", ex);
             }
         }
+
 
         public async Task RegistroAsync(Usuario usuario)
         {

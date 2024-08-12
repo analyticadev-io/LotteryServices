@@ -111,7 +111,129 @@ namespace LotteryServices.Services
         }
 
 
+        public async Task<bool> AsignarRolAUsuarioAsync(int usuarioId, int rolId)
+        {
+            try
+            {
+                // Verificar si el usuario existe
+                var usuario = await _context.Usuarios
+                    .Include(u => u.Rols)
+                    .FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado");
+                }
+
+                // Verificar si el rol existe
+                var rol = await _context.Rols.FindAsync(rolId);
+                if (rol == null)
+                {
+                    throw new Exception("Rol no encontrado");
+                }
+
+                // Verificar si el usuario ya tiene el rol asignado
+                if (usuario.Rols.Any(r => r.RolId == rolId))
+                {
+                    throw new Exception("El usuario ya tiene este rol asignado");
+                }
+
+                // Asignar el rol al usuario
+                usuario.Rols.Add(rol);
+                await _context.SaveChangesAsync();
+
+                return true; // Rol asignado exitosamente
+            }
+            catch (Exception ex)
+            {
+                // Puedes registrar el error aquí, por ejemplo con un logger
+                throw ex;
+            }
+        }
+
+        public async Task<bool> EditarRolAUsuarioAsync(int usuarioId,int oldRolId, int newRolId)
+        {
+
+            try
+            {
+                // Obtener el usuario con los roles actuales
+                var usuario = await _context.Usuarios
+                    .Include(u => u.Rols)
+                    .FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado");
+                }
+
+                // Verificar si el rol a eliminar existe en los roles del usuario
+                var rolExistente = usuario.Rols.FirstOrDefault(r => r.RolId == oldRolId);
+                if (rolExistente != null)
+                {
+                    // Eliminar el rol viejo
+                    usuario.Rols.Remove(rolExistente);
+                }
+
+                // Verificar si el nuevo rol existe
+                var nuevoRol = await _context.Rols.FindAsync(newRolId);
+                if (nuevoRol == null)
+                {
+                    throw new Exception("Nuevo rol no encontrado");
+                }
+
+                // Verificar si el nuevo rol ya está asignado
+                if (!usuario.Rols.Any(r => r.RolId == newRolId))
+                {
+                    // Asignar el nuevo rol al usuario
+                    usuario.Rols.Add(nuevoRol);
+                }
+
+                // Guardar los cambios
+                await _context.SaveChangesAsync();
+
+                return true; // Rol actualizado exitosamente
+            }
+            catch (Exception ex)
+            {
+                // Puedes registrar el error aquí, por ejemplo con un logger
+                throw ex;
+            }
+
+        }
+
+        public async Task<bool> EliminarRolAUsuarioAsync(int usuarioId, int rolId)
+        {
+
+            try
+            {
+                var usuario = await _context.Usuarios
+                    .Include(u => u.Rols)
+                    .FirstOrDefaultAsync(u => u.UsuarioId == usuarioId);
+
+                if (usuario == null)
+                {
+                    throw new Exception("Usuario no encontrado");
+                }
+
+                var rol = usuario.Rols.FirstOrDefault(r => r.RolId == rolId);
+
+                if (rol == null)
+                {
+                    throw new Exception("Rol no encontrado en el usuario");
+                }
+
+                usuario.Rols.Remove(rol);
+                await _context.SaveChangesAsync();
+
+                return true; // Rol eliminado exitosamente
+            }
+            catch (Exception ex)
+            {
+                // Puedes registrar el error aquí, por ejemplo con un logger
+                throw ex;
+            }
 
 
+        }
     }
 }

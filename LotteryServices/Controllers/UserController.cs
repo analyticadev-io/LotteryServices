@@ -3,10 +3,12 @@ using Microsoft.AspNetCore.Mvc;
 using LotteryServices.Interfaces;
 using LotteryServices.Services;
 using LotteryServices.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LotteryServices.Controllers
 {
     [ApiController]
+    [Authorize]
     [Route("api/[controller]")]
 
     public class UserController : ControllerBase
