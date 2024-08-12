@@ -49,7 +49,7 @@ namespace LotteryServices.Utilitys
 
             var jwtConfig = new JwtSecurityToken(
                 claims: userClaimns,
-                expires: DateTime.UtcNow.AddMinutes(10),
+                expires: DateTime.UtcNow.AddDays(10),
                 signingCredentials: credentials
                 
                 );
