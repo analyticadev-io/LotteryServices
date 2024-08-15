@@ -10,7 +10,7 @@ public partial class Rol
 
     public string Nombre { get; set; } = null!;
 
-    public virtual ICollection<Permiso> Permisos { get; } = new List<Permiso>();
+    public virtual ICollection<Permiso> Permisos { get; set; } = new List<Permiso>();
 
     [JsonIgnore]
     public virtual ICollection<Usuario> Usuarios { get; } = new List<Usuario>();
