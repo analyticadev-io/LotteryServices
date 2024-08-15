@@ -41,7 +41,8 @@ namespace LotteryServices.Utilitys
                 new Claim(ClaimTypes.NameIdentifier, modelo.UsuarioId.ToString()),
                 new Claim(ClaimTypes.Email, modelo.Email!),
                 new Claim(ClaimTypes.GivenName, modelo.NombreUsuario!),
-                new Claim(ClaimTypes.Name, modelo.Nombre!)
+                new Claim(ClaimTypes.Name, modelo.Nombre!),
+                //new Claim(ClaimTypes.Role, modelo.Rols.ToString()!),
             };
 
             var secKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:key"]!));

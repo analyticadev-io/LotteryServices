@@ -1,6 +1,8 @@
-﻿using LotteryServices.Interfaces;
+﻿using LotteryServices.Dtos;
+using LotteryServices.Interfaces;
 using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Data.Common;
 
 namespace LotteryServices.Services
 {
@@ -13,13 +15,28 @@ namespace LotteryServices.Services
             _context = context;
         }
 
-        public async Task<Rol> AddRolAsync(Rol rol)
+        public async Task<Rol> AddRolWithPermissionsAsync(Rol rol)
         {
             try
             {
-                _context.Rols.Add(rol);
+                var newRol = new Rol
+                {
+                    Nombre = rol.Nombre
+                };
+
+                // Obtener los permisos existentes y agregarlos al nuevo rol
+                foreach (var permisoId in rol.Permisos.Select(p => p.PermisoId))
+                {
+                    var permiso = await _context.Permisos.FindAsync(permisoId);
+                    if (permiso != null)
+                    {
+                        newRol.Permisos.Add(permiso);
+                    }
+                }
+
+                _context.Rols.Add(newRol);
                 await _context.SaveChangesAsync();
-                return rol;
+                return newRol;
             }
             catch (Exception ex)
             {
@@ -32,16 +49,19 @@ namespace LotteryServices.Services
         {
             try
             {
-                // Encuentra el rol en el contexto
-                var rol = await _context.Rols.FindAsync(rolId);
-                if (rol == null)
+                var rolToDelete = await _context.Rols
+                   .Include(r => r.Permisos)
+                   .FirstOrDefaultAsync(r => r.RolId == rolId);
+
+                if (rolToDelete == null)
                 {
-                    return false; // Rol no encontrado
+                    throw new Exception("Rol no encontrado");
                 }
 
-                _context.Rols.Remove(rol);
+                rolToDelete.Permisos.Clear();
+                _context.Rols.Remove(rolToDelete);
                 await _context.SaveChangesAsync();
-                return true; // Rol eliminado exitosamente
+                return true; 
             }
             catch (Exception)
             {
@@ -51,21 +71,25 @@ namespace LotteryServices.Services
         }
 
 
-        public async Task<IEnumerable<Rol>> GetRolAsync(int id)
+        public async Task<Rol> GetRolByIdAsync(int id)
         {
             try
             {
-                // Encuentra el rol con el id dado
                 var rol = await _context.Rols
-                    .Where(r => r.RolId == id)
-                    .ToListAsync();
+                    .Include(r => r.Permisos)
+                    .FirstOrDefaultAsync(r => r.RolId == id);
+
+                if (rol == null)
+                {
+                    throw new Exception($"Rol con ID {id} no encontrado");
+                }
 
                 return rol;
             }
-            catch (Exception ex)
+            catch (DbException ex)
             {
-    
-                return Enumerable.Empty<Rol>(); 
+                // Manejar excepciones específicas de la base de datos
+                throw new Exception("Error al obtener el rol", ex);
             }
         }
 
@@ -74,8 +98,7 @@ namespace LotteryServices.Services
         {
             try
             {
-                var roles = await _context.Rols.ToListAsync();
-                return roles;
+                 return await _context.Rols.Include(r=>r.Permisos).ToListAsync();
             }
             catch (Exception ex)
             {
@@ -84,30 +107,41 @@ namespace LotteryServices.Services
             }
         }
 
-        public async Task<Rol> UpdateRolsync(Rol rol)
+        public async Task<Rol> UpdateWithPermissionsRolsync(Rol rol)
         {
+
             try
             {
-                // Encuentra el rol existente en el contexto
-                var rolToUpdate = await _context.Rols.FindAsync(rol.RolId);
+                var rolToUpdate = await _context.Rols
+                    .Include(r => r.Permisos)
+                    .FirstOrDefaultAsync(r => r.RolId == rol.RolId);
 
                 if (rolToUpdate == null)
                 {
-                    
-                    return null;
+                    throw new Exception("Rol no encontrado");
                 }
 
-                // Actualiza las propiedades del rol
-                _context.Entry(rolToUpdate).CurrentValues.SetValues(rol);
-                // Guarda los cambios en la base de datos
-                await _context.SaveChangesAsync();
-                return rolToUpdate;
+                rolToUpdate.Permisos.Clear();
+                foreach (var permisoId in rol.Permisos.Select(p => p.PermisoId))
+                {
+                    var permiso = await _context.Permisos.FindAsync(permisoId);
+                    if (permiso != null)
+                    {
+                        rolToUpdate.Permisos.Add(permiso);
+                    }
+                }
 
+                _context.Rols.Update(rolToUpdate);
+                await _context.SaveChangesAsync();
+
+                return rolToUpdate;
             }
             catch (Exception ex)
             {
-                throw ex; 
+
+                throw ex;
             }
+
         }
 
 

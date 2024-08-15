@@ -10,39 +10,22 @@ namespace LotteryServices.Services
     {
         private readonly LoteriaDbContext _context;
         private readonly Utilidades _utilidades;
+        private readonly IRol _rolService;
 
-        public ServiceLogin(LoteriaDbContext context, Utilidades utilidades)
+        public ServiceLogin(LoteriaDbContext context, Utilidades utilidades, IRol rolService)
         {
             _context = context;
             _utilidades = utilidades;
+            rolService = _rolService;
         }
-
-        //public async Task<(bool IsSuccess, string Token)> LoginAsync(LoginDto loginDto)
-        //{
-        //    try
-        //    {
-        //        var user = await _context.Usuarios
-        //            .FirstOrDefaultAsync(u => u.NombreUsuario == loginDto.NombreUsuario
-        //                                      && u.Contrasena == _utilidades.EncriptarSHA256(loginDto.Contrasena));
-        //        if (user == null)
-        //        {
-        //            return (false, "");        //        }
-        //        // Assuming GenerarJwt method generates a JWT token for the user
-        //        string token = _utilidades.GenerarJwt(user);
-        //        return (true, token);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        // Handle or log the exception appropriately
-        //        throw new InvalidOperationException("An error occurred during login.", ex);
-        //    }
-        //}
-
         public async Task<(bool IsSuccess, AuthResponseDto AuthResponse)> LoginAsync(LoginDto loginDto)
         {
             try
             {
                 var user = await _context.Usuarios
+                    .Include(u=>u.Rols)
+                    .ThenInclude(r=>r.Permisos)
+                    .Include(u=>u.Boletos)
                     .FirstOrDefaultAsync(u => u.NombreUsuario == loginDto.NombreUsuario
                                               && u.Contrasena == _utilidades.EncriptarSHA256(loginDto.Contrasena));
 
@@ -58,8 +41,25 @@ namespace LotteryServices.Services
                 {
                     UsuarioId = user.UsuarioId,
                     NombreUsuario = user.NombreUsuario,
-                    Email = user.Email
-                    // Mapear otras propiedades del usuario si es necesario
+                    Email = user.Email,
+                    Nombre=user.Nombre,
+                    Boletos = user.Boletos.Select(b => new Boleto
+                    {
+                        // Mapea las propiedades de Boleto a BoletoDto
+                        BoletoId = b.BoletoId,
+                        // Otros campos
+                    }).ToList(),
+                    Rol = user.Rols.Select(r => new Rol
+                    {
+                        // Mapea las propiedades de Rol a RolDto
+                        RolId = r.RolId,
+                        Nombre = r.Nombre,
+                        Permisos = r.Permisos.Select(p => new Permiso
+                        {
+                            PermisoId = p.PermisoId,
+                            Descripcion = p.Descripcion.ToString(),
+                        }).ToList()
+                    }).ToList(),
                 };
 
                 var authResponse = new AuthResponseDto
@@ -102,10 +102,24 @@ namespace LotteryServices.Services
                     Contrasena = _utilidades.EncriptarSHA256(usuario.Contrasena),
                     NombreUsuario = usuario.NombreUsuario,
                     FechaRegistro = usuario.FechaRegistro,
+                    Rols = new List<Rol>()
                 };
 
-                await _context.Usuarios.AddAsync(userModel);
+                var rol = await _context.Rols.FindAsync(3); // Asume que tienes una entidad `Role` en tu contexto con ID 3
+                if (rol != null)
+                {
+                    userModel.Rols.Add(rol);
+                }
+
+                await _context.Usuarios.AddAsync(userModel);              
+               
                 await _context.SaveChangesAsync();
+                /*
+                * Cambiar el IdRol Por el id especifico del rol usuario para
+                * que todos los usuario al registrarse tengan el rool por defecto user
+                */
+                //var userId = userModel.UsuarioId;
+                //await _rolService.AsignarRolAUsuarioAsync(usuario.UsuarioId, 3);
             }
             catch (DbUpdateException ex)
             {

@@ -32,31 +32,26 @@ namespace LotteryServices.Controllers
         [HttpPost]
         public async Task<ActionResult<IEnumerable<Rol>>> addRol(Rol rol)
         {
-            var nuevorol = await _serviceRol.AddRolAsync(rol);
+            var nuevorol = await _serviceRol.AddRolWithPermissionsAsync(rol);
             return Ok(nuevorol);
 
         }
 
 
-        [HttpGet("{id}")]
-        public async Task<ActionResult<IEnumerable<Rol>>> GetRol(int id)
+        //[HttpGet("{id}")]
+        //public async Task<ActionResult<IEnumerable<Rol>>> GetRol(int id)
+        //{
+        //    var rol = await _serviceRol.GetRolByIdAsync(id);
+        //    return Ok(rol);
+
+        //}
+
+        [HttpPut]
+        public async Task<ActionResult<Rol>> UpdateRol( Rol rol)
         {
-            var rol = await _serviceRol.GetRolAsync(id);
-            return Ok(rol);
-
-        }
-
-        [HttpPut("{id}")]
-        public async Task<ActionResult<Rol>> UpdateRol(int id, Rol rol)
-        {
-            if (id != rol.RolId)
-            {
-                return BadRequest("El ID del rol no coincide.");
-            }
-
             try
             {
-                var updatedRol = await _serviceRol.UpdateRolsync(rol);
+                var updatedRol = await _serviceRol.UpdateWithPermissionsRolsync(rol);
                 if (updatedRol == null)
                 {
                     return NotFound("Rol no encontrado.");
@@ -71,12 +66,12 @@ namespace LotteryServices.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteRol(int id)
+        [HttpDelete("{rolId}")]
+        public async Task<ActionResult> DeleteRol(int rolId)
         {
             try
             {
-                var result = await _serviceRol.DeleteRolAsync(id);
+                var result = await _serviceRol.DeleteRolAsync(rolId);
                 if (!result)
                 {
                     return NotFound("Rol no encontrado.");

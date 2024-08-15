@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace LotteryServices.Models;
 
 public partial class Usuario
 {
+
     public int UsuarioId { get; set; }
 
     public string Nombre { get; set; } = null!;
@@ -17,7 +20,7 @@ public partial class Usuario
 
     public DateTime? FechaRegistro { get; set; }
 
-    public virtual ICollection<Boleto> Boletos { get; } = new List<Boleto>();
+    public virtual ICollection<Boleto> Boletos { get; set; } = new List<Boleto>();
 
-    public virtual ICollection<Rol> Rols { get; } = new List<Rol>();
+    public virtual ICollection<Rol> Rols { get; set; } = new List<Rol>();
 }
