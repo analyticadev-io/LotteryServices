@@ -1,4 +1,6 @@
-﻿using LotteryServices.Models;
+﻿
+using BasicBackendTemplate.Models;
+
 namespace LotteryServices.Interfaces
 {
     public interface IUsuario

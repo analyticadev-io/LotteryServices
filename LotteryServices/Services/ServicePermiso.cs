@@ -1,21 +1,23 @@
-﻿using LotteryServices.Interfaces;
-using LotteryServices.Models;
+﻿using BasicBackendTemplate.Models;
+using LotteryServices.Interfaces;
+
 using Microsoft.EntityFrameworkCore;
 
 namespace LotteryServices.Services
 {
     public class ServicePermiso : IPermiso
     {
-        private readonly LoteriaDbContext _context;
+        private readonly BasicBackendTemplateContext _context;
 
-        public ServicePermiso(LoteriaDbContext context)
+        public ServicePermiso(BasicBackendTemplateContext context)
         {
             _context = context;
         }
 
-        public async Task<IEnumerable<Permiso>> GetPermisosAsync()
+   
+        async Task<IEnumerable<Permiso>> IPermiso.GetPermisosAsync()
         {
-           return await _context.Permisos.ToListAsync();
+            return await _context.Permisos.ToListAsync();
         }
     }
 }
