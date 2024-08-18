@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace LotteryServices.Models;
+namespace BasicBackendTemplate.Models;
 
 public partial class Permiso
 {
@@ -10,4 +10,6 @@ public partial class Permiso
     public string Descripcion { get; set; } = null!;
 
     public virtual ICollection<Rol> Rols { get; } = new List<Rol>();
+
+    
 }
