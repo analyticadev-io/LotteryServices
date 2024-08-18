@@ -1,11 +1,13 @@
 using Microsoft.EntityFrameworkCore;
-using LotteryServices.Models;
 using LotteryServices.Interfaces;
 using LotteryServices.Services;
 using LotteryServices.Utilitys;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
+using BasicBackendTemplate.Models;
+using BasicBackendTemplate.Interfaces;
+using BasicBackendTemplate.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -19,15 +21,15 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Add this line to include controllers
 
-builder.Services.AddDbContext<LoteriaDbContext>(options =>
+builder.Services.AddDbContext<BasicBackendTemplateContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
 
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
 builder.Services.AddScoped<ILogin, ServiceLogin>();
-builder.Services.AddScoped<ISorteo, ServiceSorteo>();
 builder.Services.AddScoped<IRol, ServiceRol>();
 builder.Services.AddScoped<IPermiso, ServicePermiso>();
+builder.Services.AddScoped<IModule, ServiceModule>();
 
 
 builder.Services.AddSingleton<Utilidades>();

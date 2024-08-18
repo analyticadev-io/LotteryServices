@@ -1,5 +1,6 @@
-﻿using LotteryServices.Dtos;
-using LotteryServices.Models;
+﻿
+using BasicBackendTemplate.Models;
+
 
 namespace LotteryServices.Interfaces
 {
