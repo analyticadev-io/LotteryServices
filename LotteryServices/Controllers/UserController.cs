@@ -2,8 +2,9 @@
 using Microsoft.AspNetCore.Mvc;
 using LotteryServices.Interfaces;
 using LotteryServices.Services;
-using LotteryServices.Models;
+
 using Microsoft.AspNetCore.Authorization;
+using BasicBackendTemplate.Models;
 
 namespace LotteryServices.Controllers
 {
