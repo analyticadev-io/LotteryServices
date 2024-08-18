@@ -1,4 +1,5 @@
-﻿using LotteryServices.Models;
+﻿
+using BasicBackendTemplate.Models;
 using LotteryServices.Dtos;
 using Microsoft.EntityFrameworkCore;
 

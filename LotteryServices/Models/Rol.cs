@@ -1,8 +1,7 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 
-namespace LotteryServices.Models;
+namespace BasicBackendTemplate.Models;
 
 public partial class Rol
 {
@@ -12,6 +11,5 @@ public partial class Rol
 
     public virtual ICollection<Permiso> Permisos { get; set; } = new List<Permiso>();
 
-    [JsonIgnore]
     public virtual ICollection<Usuario> Usuarios { get; } = new List<Usuario>();
 }

@@ -1,6 +1,7 @@
-﻿using LotteryServices.Dtos;
+﻿using BasicBackendTemplate.Models;
+using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
-using LotteryServices.Models;
+
 using LotteryServices.Utilitys;
 using Microsoft.EntityFrameworkCore;
 
@@ -8,11 +9,11 @@ namespace LotteryServices.Services
 {
     public class ServiceLogin : ILogin
     {
-        private readonly LoteriaDbContext _context;
+        private readonly BasicBackendTemplateContext _context;
         private readonly Utilidades _utilidades;
         private readonly IRol _rolService;
 
-        public ServiceLogin(LoteriaDbContext context, Utilidades utilidades, IRol rolService)
+        public ServiceLogin(BasicBackendTemplateContext context, Utilidades utilidades, IRol rolService)
         {
             _context = context;
             _utilidades = utilidades;
@@ -25,7 +26,6 @@ namespace LotteryServices.Services
                 var user = await _context.Usuarios
                     .Include(u=>u.Rols)
                     .ThenInclude(r=>r.Permisos)
-                    .Include(u=>u.Boletos)
                     .FirstOrDefaultAsync(u => u.NombreUsuario == loginDto.NombreUsuario
                                               && u.Contrasena == _utilidades.EncriptarSHA256(loginDto.Contrasena));
 
@@ -43,12 +43,6 @@ namespace LotteryServices.Services
                     NombreUsuario = user.NombreUsuario,
                     Email = user.Email,
                     Nombre=user.Nombre,
-                    Boletos = user.Boletos.Select(b => new Boleto
-                    {
-                        // Mapea las propiedades de Boleto a BoletoDto
-                        BoletoId = b.BoletoId,
-                        // Otros campos
-                    }).ToList(),
                     Rol = user.Rols.Select(r => new Rol
                     {
                         // Mapea las propiedades de Rol a RolDto
@@ -105,7 +99,7 @@ namespace LotteryServices.Services
                     Rols = new List<Rol>()
                 };
 
-                var rol = await _context.Rols.FindAsync(3); // Asume que tienes una entidad `Role` en tu contexto con ID 3
+                var rol = await _context.Rols.FindAsync(2); // Asume que tienes una entidad `Role` en tu contexto con ID 3
                 if (rol != null)
                 {
                     userModel.Rols.Add(rol);
@@ -114,12 +108,7 @@ namespace LotteryServices.Services
                 await _context.Usuarios.AddAsync(userModel);              
                
                 await _context.SaveChangesAsync();
-                /*
-                * Cambiar el IdRol Por el id especifico del rol usuario para
-                * que todos los usuario al registrarse tengan el rool por defecto user
-                */
-                //var userId = userModel.UsuarioId;
-                //await _rolService.AsignarRolAUsuarioAsync(usuario.UsuarioId, 3);
+
             }
             catch (DbUpdateException ex)
             {
@@ -127,8 +116,6 @@ namespace LotteryServices.Services
             }
         }
 
-
-
-
+       
     }
 }

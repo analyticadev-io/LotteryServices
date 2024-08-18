@@ -1,6 +1,7 @@
-﻿using LotteryServices.Dtos;
+﻿using BasicBackendTemplate.Models;
+using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
-using LotteryServices.Models;
+
 using Microsoft.EntityFrameworkCore;
 using System.Data.Common;
 
@@ -8,9 +9,9 @@ namespace LotteryServices.Services
 {
     public class ServiceRol : IRol
     {
-        private readonly LoteriaDbContext _context;
+        private readonly BasicBackendTemplateContext _context;
 
-        public ServiceRol(LoteriaDbContext context)
+        public ServiceRol(BasicBackendTemplateContext context)
         {
             _context = context;
         }

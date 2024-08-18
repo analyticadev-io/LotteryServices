@@ -1,6 +1,6 @@
-﻿using LotteryServices.Dtos;
+﻿using BasicBackendTemplate.Models;
+using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
-using LotteryServices.Models;
 using LotteryServices.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
