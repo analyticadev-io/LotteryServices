@@ -1,4 +1,4 @@
-﻿namespace BasicBackendTemplate.Dtos
+﻿namespace LotteryServices.Dtos
 {
     public class ResponseModule
     {
