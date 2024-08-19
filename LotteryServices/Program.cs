@@ -5,9 +5,8 @@ using LotteryServices.Utilitys;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-using BasicBackendTemplate.Models;
-using BasicBackendTemplate.Interfaces;
-using BasicBackendTemplate.Services;
+
+using LotteryServices.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -21,7 +20,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Add this line to include controllers
 
-builder.Services.AddDbContext<BasicBackendTemplateContext>(options =>
+builder.Services.AddDbContext<LoteriaDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
 
 // Register the services
@@ -100,4 +99,6 @@ app.UseAuthorization();
 
 app.MapControllers(); // Map controller routes
 
-app.Run();
+//app.Run();
+app.Run("https://localhost:5001");
+
