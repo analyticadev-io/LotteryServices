@@ -28,8 +28,9 @@ public partial class LoteriaDbContext : DbContext
     public virtual DbSet<Sorteo> Sorteos { get; set; }
 
     public virtual DbSet<Usuario> Usuarios { get; set; }
+    public virtual DbSet<Module> Modules { get; set; }
 
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Boleto>(entity =>
@@ -165,6 +166,28 @@ public partial class LoteriaDbContext : DbContext
                         j.HasKey("UsuarioId", "RolId").HasName("PK__UsuarioR__24AFD797599EC1E0");
                         j.ToTable("UsuarioRol");
                     });
+        });
+
+        modelBuilder.Entity<Module>(entity =>
+        {
+            entity.HasKey(e => e.IdModule).HasName("PK__Permiso__96E0C723B9F1774B");
+
+            entity.ToTable("Modules");
+
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.Property(e => e.icon)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+
+            entity.Property(e => e.module_name)
+                .HasMaxLength(255)
+                .IsUnicode(false);
+            entity.Property(e => e.visibilityStatus)
+                .HasMaxLength(255)
+                .IsUnicode(false);
         });
 
         OnModelCreatingPartial(modelBuilder);
