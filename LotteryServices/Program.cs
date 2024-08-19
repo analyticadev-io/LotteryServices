@@ -53,13 +53,28 @@ builder.Services.AddAuthentication(config =>
 });
 
 
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("NewPolicy", app =>
+//    {
+//        app.WithOrigins("https://analyticadev-io.github.io")
+//                       .AllowAnyMethod()
+//                       .AllowAnyHeader();
+
+//    });
+//});
+
+
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("NewPolicy", app =>
+    options.AddPolicy("NewPolicy", policy =>
     {
-        app.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod();
+        policy.WithOrigins("https://analyticadev-io.github.io")
+              .AllowAnyMethod()
+              .AllowAnyHeader();
     });
 });
+
 
 
 var app = builder.Build();
@@ -98,8 +113,6 @@ app.UseAuthorization();
 
 
 app.MapControllers(); // Map controller routes
-
-//app.Urls.Add($"http://*:5001");
 
 app.Run();
 
