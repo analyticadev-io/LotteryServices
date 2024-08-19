@@ -1,3 +1,4 @@
+# Etapa de construcción
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /app
 
@@ -18,9 +19,15 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/output .
 
+# Copiar el script de entrypoint
+COPY entrypoint.sh .
+
+# Dar permisos de ejecución al script
+RUN chmod +x ./entrypoint.sh
+
 # Exponer los puertos que la aplicación usará
 EXPOSE 80
 EXPOSE 5001
 
-# Comando de entrada
-ENTRYPOINT ["dotnet", "LotteryServices.dll"]
+# Establecer el punto de entrada
+ENTRYPOINT ["./entrypoint.sh"]
