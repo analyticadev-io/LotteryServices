@@ -1,17 +1,18 @@
-﻿using BasicBackendTemplate.Dtos;
-using BasicBackendTemplate.Interfaces;
-using BasicBackendTemplate.Models;
+﻿using LotteryServices.Dtos;
+using LotteryServices.Interfaces;
+using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.Reflection;
 
-
-namespace BasicBackendTemplate.Services
+namespace LotteryServices.Services
 {
     public class ServiceModule : IModule
     {
-        private readonly BasicBackendTemplateContext _context;
 
-        public ServiceModule(BasicBackendTemplateContext context)
+        private readonly LoteriaDbContext _context;
+
+        public ServiceModule(LoteriaDbContext context)
         {
             _context = context;
         }
@@ -30,8 +31,8 @@ namespace BasicBackendTemplate.Services
             {
                 Name = module.name,
                 module_name = module.module_name,
-                visibilityStatus="false",
-                icon=module.icon,
+                visibilityStatus = "false",
+                icon = module.icon,
             };
 
             var permissions = new List<Permiso>
@@ -56,14 +57,14 @@ namespace BasicBackendTemplate.Services
         {
             // Verificar si el módulo existe en la base de datos
             var existingModule = await _context.Modules
-                .FirstOrDefaultAsync(m => m.IdModule==module);
+                .FirstOrDefaultAsync(m => m.IdModule == module);
 
             if (existingModule == null)
             {
                 throw new InvalidOperationException("El módulo NO existe.");
             }
 
-            
+
             var permissions = await _context.Permisos
                 .Where(p => p.Descripcion.StartsWith($"browse_{existingModule.module_name}") ||
                             p.Descripcion.StartsWith($"read_{existingModule.module_name}") ||
@@ -150,5 +151,9 @@ namespace BasicBackendTemplate.Services
         {
             return await _context.Modules.ToListAsync();
         }
+
+
     }
+
 }
+

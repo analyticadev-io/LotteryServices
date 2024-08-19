@@ -1,15 +1,14 @@
-﻿using BasicBackendTemplate.Models;
-using LotteryServices.Interfaces;
-
+﻿using LotteryServices.Interfaces;
+using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotteryServices.Services
 {
     public class ServicePermiso : IPermiso
     {
-        private readonly BasicBackendTemplateContext _context;
+        private readonly LoteriaDbContext _context;
 
-        public ServicePermiso(BasicBackendTemplateContext context)
+        public ServicePermiso(LoteriaDbContext context)
         {
             _context = context;
         }
