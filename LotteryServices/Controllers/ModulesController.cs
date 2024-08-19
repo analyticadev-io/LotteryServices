@@ -1,12 +1,11 @@
-﻿using BasicBackendTemplate.Dtos;
-using BasicBackendTemplate.Interfaces;
-using BasicBackendTemplate.Models;
+﻿using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
+using LotteryServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
-namespace BasicBackendTemplate.Controllers
+namespace LotteryServices.Controllers
 {
     [Route("api/[controller]")]
     [Authorize]
@@ -15,9 +14,9 @@ namespace BasicBackendTemplate.Controllers
     {
         private readonly IModule _moduleService;
 
-        private readonly BasicBackendTemplateContext _context;
+        private readonly LoteriaDbContext _context;
 
-        public ModulesController(IModule moduleService, BasicBackendTemplateContext context)
+        public ModulesController(IModule moduleService, LoteriaDbContext context)
         {
             _moduleService = moduleService;
             _context = context;

@@ -1,7 +1,7 @@
-﻿using BasicBackendTemplate.Models;
+﻿
 using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
-
+using LotteryServices.Models;
 using LotteryServices.Utilitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -15,9 +15,9 @@ namespace LotteryServices.Controllers
     {
         private Utilidades _utilidades;
         private readonly ILogin _loginService;
-        private readonly BasicBackendTemplateContext _context;
+        private readonly LoteriaDbContext _context;
 
-        public AccesoController(Utilidades utilidades, ILogin loginService, BasicBackendTemplateContext context)
+        public AccesoController(Utilidades utilidades, ILogin loginService, LoteriaDbContext context)
         {
             _utilidades = utilidades;
             _loginService = loginService;

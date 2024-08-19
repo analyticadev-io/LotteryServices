@@ -4,7 +4,7 @@ using LotteryServices.Interfaces;
 using LotteryServices.Services;
 
 using Microsoft.AspNetCore.Authorization;
-using BasicBackendTemplate.Models;
+using LotteryServices.Models;
 
 namespace LotteryServices.Controllers
 {
