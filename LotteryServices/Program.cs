@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers(); // Add this line to include controllers
 
 builder.Services.AddDbContext<LoteriaDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
+        options.UseNpgsql(builder.Configuration.GetConnectionString("LotteryConString")));
 
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
