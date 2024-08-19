@@ -99,8 +99,8 @@ app.UseAuthorization();
 
 app.MapControllers(); // Map controller routes
 
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-app.Urls.Add($"http://0.0.0.0:{port}");
+//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+//app.Urls.Add($"http://localhost:{port}");
 
 app.Run();
 //app.Run("https://localhost:5001");
