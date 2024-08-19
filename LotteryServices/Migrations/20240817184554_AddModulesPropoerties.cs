@@ -2,7 +2,7 @@
 
 #nullable disable
 
-namespace BasicBackendTemplate.Migrations
+namespace LotteryServices.Migrations
 {
     /// <inheritdoc />
     public partial class AddModulesPropoerties : Migration
