@@ -1,6 +1,5 @@
-﻿
-using BasicBackendTemplate.Models;
-using LotteryServices.Dtos;
+﻿using LotteryServices.Dtos;
+using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace LotteryServices.Interfaces

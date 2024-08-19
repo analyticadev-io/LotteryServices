@@ -1,5 +1,5 @@
-﻿using BasicBackendTemplate.Models;
-using LotteryServices.Interfaces;
+﻿using LotteryServices.Interfaces;
+using LotteryServices.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;

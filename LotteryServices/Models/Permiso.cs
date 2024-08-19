@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BasicBackendTemplate.Models;
+namespace LotteryServices.Models;
 
 public partial class Permiso
 {
@@ -11,5 +11,5 @@ public partial class Permiso
 
     public virtual ICollection<Rol> Rols { get; } = new List<Rol>();
 
-    
+
 }

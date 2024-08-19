@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BasicBackendTemplate.Models;
+namespace LotteryServices.Models;
 
 public partial class Module
 {

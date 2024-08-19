@@ -1,6 +1,5 @@
-﻿using BasicBackendTemplate.Models;
-using LotteryServices.Interfaces;
-
+﻿using LotteryServices.Interfaces;
+using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
 using static LotteryServices.Services.ServiceUsuario;
 
@@ -10,9 +9,9 @@ namespace LotteryServices.Services
     {
 
 
-        private readonly BasicBackendTemplateContext _context;
+        private readonly LoteriaDbContext _context;
 
-        public ServiceUsuario(BasicBackendTemplateContext context)
+        public ServiceUsuario(LoteriaDbContext context)
         {
             _context = context;
         }

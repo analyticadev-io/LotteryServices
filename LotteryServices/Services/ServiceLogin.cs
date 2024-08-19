@@ -1,7 +1,6 @@
-﻿using BasicBackendTemplate.Models;
-using LotteryServices.Dtos;
+﻿using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
-
+using LotteryServices.Models;
 using LotteryServices.Utilitys;
 using Microsoft.EntityFrameworkCore;
 
@@ -9,11 +8,11 @@ namespace LotteryServices.Services
 {
     public class ServiceLogin : ILogin
     {
-        private readonly BasicBackendTemplateContext _context;
+        private readonly LoteriaDbContext _context;
         private readonly Utilidades _utilidades;
         private readonly IRol _rolService;
 
-        public ServiceLogin(BasicBackendTemplateContext context, Utilidades utilidades, IRol rolService)
+        public ServiceLogin(LoteriaDbContext context, Utilidades utilidades, IRol rolService)
         {
             _context = context;
             _utilidades = utilidades;

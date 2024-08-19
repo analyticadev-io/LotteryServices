@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 
-namespace BasicBackendTemplate.Models;
+namespace LotteryServices.Models;
 
 public partial class Usuario
 {
@@ -18,4 +18,5 @@ public partial class Usuario
     public DateTime? FechaRegistro { get; set; }
 
     public virtual ICollection<Rol> Rols { get; set; } = new List<Rol>();
+    public virtual ICollection<Boleto> Boletos { get; set; } = new List<Boleto>();
 }

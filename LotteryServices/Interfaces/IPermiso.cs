@@ -1,5 +1,4 @@
-﻿
-using BasicBackendTemplate.Models;
+﻿using LotteryServices.Models;
 
 
 namespace LotteryServices.Interfaces
