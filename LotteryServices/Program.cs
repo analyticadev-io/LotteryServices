@@ -11,7 +11,7 @@ using LotteryServices.Models;
 var builder = WebApplication.CreateBuilder(args);
 
 
-var InProduction = false;
+var InProduction = true;
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
