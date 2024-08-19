@@ -99,6 +99,6 @@ app.UseAuthorization();
 
 app.MapControllers(); // Map controller routes
 
-//app.Run();
-app.Run("https://localhost:5001");
+app.Run();
+//app.Run("https://localhost:5001");
 
