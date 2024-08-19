@@ -39,7 +39,7 @@ builder.Services.AddAuthentication(config =>
     config.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
 }).AddJwtBearer(config =>
 {
-    config.RequireHttpsMetadata = false;
+    config.RequireHttpsMetadata = true;
     config.SaveToken = true;
     config.TokenValidationParameters = new TokenValidationParameters
     {
