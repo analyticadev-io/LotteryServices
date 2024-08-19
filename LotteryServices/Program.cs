@@ -21,7 +21,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers(); // Add this line to include controllers
 
 builder.Services.AddDbContext<LoteriaDbContext>(options =>
-        options.UseNpgsql(builder.Configuration.GetConnectionString("LotteryConString")));
+        options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConStringPROD")));
 
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
@@ -99,9 +99,8 @@ app.UseAuthorization();
 
 app.MapControllers(); // Map controller routes
 
-//var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-//app.Urls.Add($"http://localhost:{port}");
+//app.Urls.Add($"http://*:5001");
 
 app.Run();
-//app.Run("https://localhost:5001");
+
 

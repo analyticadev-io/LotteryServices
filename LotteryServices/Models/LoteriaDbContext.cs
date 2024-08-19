@@ -150,6 +150,9 @@ public partial class LoteriaDbContext : DbContext
                 .HasColumnType("datetime");
             entity.Property(e => e.Nombre).HasMaxLength(100);
 
+            //POSTGresSQL
+            //entity.ToTable("Usuarios", "public");
+
             entity.HasMany(d => d.Rols).WithMany(p => p.Usuarios)
                 .UsingEntity<Dictionary<string, object>>(
                     "UsuarioRol",
