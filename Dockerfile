@@ -14,7 +14,7 @@ COPY . .
 RUN dotnet publish ./LotteryServices/LotteryServices.csproj -c Release -o /app/output
 
 # Etapa final, copiar los archivos publicados y configurar el contenedor
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
+FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/output .
 
