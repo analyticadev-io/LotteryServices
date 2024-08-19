@@ -10,6 +10,8 @@ using LotteryServices.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
+
+var InProduction = false;
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -20,8 +22,18 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Add this line to include controllers
 
-builder.Services.AddDbContext<LoteriaDbContext>(options =>
+
+if (InProduction)
+{
+    builder.Services.AddDbContext<LoteriaDbContext>(options =>
         options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConStringPROD")));
+}
+else
+{
+    builder.Services.AddDbContext<LoteriaDbContext>(options =>
+        options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
+
+}
 
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
@@ -53,28 +65,38 @@ builder.Services.AddAuthentication(config =>
 });
 
 
-//builder.Services.AddCors(options =>
-//{
-//    options.AddPolicy("NewPolicy", app =>
-//    {
-//        app.WithOrigins("https://analyticadev-io.github.io")
-//                       .AllowAnyMethod()
-//                       .AllowAnyHeader();
 
-//    });
-//});
-
-
-builder.Services.AddCors(options =>
+if (InProduction)
 {
-    options.AddPolicy("NewPolicy", policy =>
+    builder.Services.AddCors(options =>
     {
-        policy.WithOrigins("https://analyticadev-io.github.io")
-              .AllowAnyMethod()
-              .AllowAnyHeader();
+        options.AddPolicy("NewPolicy", policy =>
+        {
+            policy.WithOrigins("https://analyticadev-io.github.io")
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
     });
-});
 
+}
+else
+{
+
+
+    builder.Services.AddCors(options =>
+    {
+        options.AddPolicy("NewPolicy", app =>
+        {
+            app.AllowAnyOrigin()
+                           .AllowAnyMethod()
+                           .AllowAnyHeader();
+
+        });
+    });
+
+
+
+}
 
 
 var app = builder.Build();
@@ -97,10 +119,10 @@ app.UseAuthorization();
 //    var token = context.Request.Headers["Authorization"].ToString();
 //    Console.WriteLine("Token recibido: " + token); // O usa un logger para registrar el token
 
-//    // Verifica si el token est· vacÌo o tiene problemas
+//    // Verifica si el token est√° vac√≠o o tiene problemas
 //    if (string.IsNullOrEmpty(token))
 //    {
-//        Console.WriteLine("No se recibiÛ token.");
+//        Console.WriteLine("No se recibi√≥ token.");
 //    }
 //    else if (!token.StartsWith("Bearer "))
 //    {
