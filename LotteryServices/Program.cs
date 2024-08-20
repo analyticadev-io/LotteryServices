@@ -10,8 +10,8 @@ using LotteryServices.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var InProduction = false;
 
+var InProduction = false;
 builder.Services.AddControllers()
     .AddNewtonsoftJson(options =>
         options.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
@@ -21,6 +21,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddControllers(); // Add this line to include controllers
+
 
 if (InProduction)
 {
@@ -33,10 +34,6 @@ else
         options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
 
 }
-
-
-
-
 
 // Register the services
 builder.Services.AddScoped<IUsuario, ServiceUsuario>();
@@ -67,7 +64,6 @@ builder.Services.AddAuthentication(config =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:key"]!))
     };
 });
-
 
 
 
@@ -124,10 +120,10 @@ app.UseAuthorization();
 //    var token = context.Request.Headers["Authorization"].ToString();
 //    Console.WriteLine("Token recibido: " + token); // O usa un logger para registrar el token
 
-//    // Verifica si el token est· vacÌo o tiene problemas
+//    // Verifica si el token est√° vac√≠o o tiene problemas
 //    if (string.IsNullOrEmpty(token))
 //    {
-//        Console.WriteLine("No se recibiÛ token.");
+//        Console.WriteLine("No se recibi√≥ token.");
 //    }
 //    else if (!token.StartsWith("Bearer "))
 //    {
