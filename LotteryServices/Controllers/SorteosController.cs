@@ -28,5 +28,36 @@ namespace LotteryServices.Controllers
             return Ok(sorteos);
         }
 
+        //GET : /api/Sorteos
+        [HttpPut]
+        public async Task<ActionResult<IEnumerable<Sorteo>>> EditSorteo(Sorteo sorteo)
+        {
+            var sorteos = await _serviceSorteo.EditSorteoAsync(sorteo);
+            return Ok(sorteos);
+        }
+
+        [HttpPost]
+        public async Task<ActionResult<IEnumerable<Sorteo>>> AddSorteo(Sorteo sorteo)
+        {
+            var sorteos = await _serviceSorteo.AddSorteoAsync(sorteo);
+            return Ok(sorteos);
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<ActionResult<IEnumerable<bool>>> DeleteSorteo(int id)
+        {
+            var sorteos = await _serviceSorteo.DeleteSorteoAsync(id);
+            if (sorteos)
+            {
+                return Ok();
+            }
+            else
+            {
+                return NotFound();
+            }
+            
+        }
+
+
     }
 }
