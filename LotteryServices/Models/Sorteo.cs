@@ -10,6 +10,7 @@ public partial class Sorteo
     public DateTime FechaSorteo { get; set; }
 
     public string? Descripcion { get; set; }
+    public string? Status { get; set; }
 
     public virtual ICollection<Boleto> Boletos { get; } = new List<Boleto>();
 
