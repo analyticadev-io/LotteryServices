@@ -44,9 +44,10 @@ builder.Services.AddScoped<ILogin, ServiceLogin>();
 builder.Services.AddScoped<IRol, ServiceRol>();
 builder.Services.AddScoped<IPermiso, ServicePermiso>();
 builder.Services.AddScoped<IModule, ServiceModule>();
-
-
 builder.Services.AddSingleton<Utilidades>();
+
+
+builder.Services.AddSingleton<IEncriptado>(new ServiceEncriptado());
 
 builder.Services.AddAuthentication(config =>
 {
