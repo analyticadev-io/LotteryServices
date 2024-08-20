@@ -15,12 +15,15 @@ namespace LotteryServices.Controllers
     {
         private Utilidades _utilidades;
         private readonly ILogin _loginService;
+        private readonly IEncriptado _encriptadoService;
         private readonly LoteriaDbContext _context;
 
-        public AccesoController(Utilidades utilidades, ILogin loginService, LoteriaDbContext context)
+        public AccesoController(Utilidades utilidades, ILogin loginService, 
+        IEncriptado encriptadoService, LoteriaDbContext context)
         {
             _utilidades = utilidades;
             _loginService = loginService;
+            _encriptadoService = encriptadoService;
             _context = context;
         }
 
@@ -73,20 +76,41 @@ namespace LotteryServices.Controllers
             }
         }
 
+        //[HttpPost]
+        //[Route("Login")]
+        //public async Task<IActionResult> Login(LoginDto loginDto)
+        //{
+        //    var (isSuccess, token) = await _loginService.LoginAsync(loginDto);
 
+        //    if (!isSuccess)
+        //    {
+        //        return Unauthorized(new { isSuccess = false, message = "Invalid username or password." });
+        //    }
+
+        //    return Ok(new { isSuccess = true, token });
+        //}
 
 
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
         {
-            var (isSuccess, token) = await _loginService.LoginAsync(loginDto);
+            // Cifra los datos de inicio de sesión
+            var decryptedPassword = _encriptadoService.Decrypt(loginDto.Contrasena);
+            var loginRequest = new LoginDto
+            {
+                NombreUsuario = loginDto.NombreUsuario,
+                Contrasena = decryptedPassword
+            };
+
+            var (isSuccess, token) = await _loginService.LoginAsync(loginRequest);
 
             if (!isSuccess)
             {
                 return Unauthorized(new { isSuccess = false, message = "Invalid username or password." });
             }
 
+            // Aquí puedes cifrar el token si es necesario
             return Ok(new { isSuccess = true, token });
         }
 
