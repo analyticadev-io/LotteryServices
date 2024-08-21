@@ -17,9 +17,13 @@ namespace LotteryServices.Services
 
         public async Task<Sorteo> AddSorteoAsync(Sorteo sorteo)
         {
-            _context.Sorteos.Add(sorteo);
+            var newSorteo= new Sorteo();
+            newSorteo.Descripcion=sorteo.Descripcion;
+            newSorteo.FechaSorteo=sorteo.FechaSorteo;
+            newSorteo.Status = "active";
+            _context.Sorteos.Add(newSorteo);
             await _context.SaveChangesAsync();
-            return sorteo;
+            return newSorteo;
         }
 
         public async Task<bool> DeleteSorteoAsync(int id)
@@ -48,7 +52,7 @@ namespace LotteryServices.Services
             {
                 existingSorteo.FechaSorteo = sorteo.FechaSorteo;
                 existingSorteo.Descripcion = sorteo.Descripcion;
-                existingSorteo.Status = sorteo.Status;
+                existingSorteo.Status = "active";
 
                 _context.Sorteos.Update(existingSorteo);
                 await _context.SaveChangesAsync();
