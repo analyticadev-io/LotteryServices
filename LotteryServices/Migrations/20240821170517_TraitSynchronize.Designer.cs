@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LotteryServices.Migrations
 {
     [DbContext(typeof(LoteriaDbContext))]
-    [Migration("20240820200556_AddPropertiesToSorteosTable")]
-    partial class AddPropertiesToSorteosTable
+    [Migration("20240821170517_TraitSynchronize")]
+    partial class TraitSynchronize
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

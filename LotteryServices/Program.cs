@@ -44,7 +44,6 @@ builder.Services.AddScoped<IModule, ServiceModule>();
 builder.Services.AddScoped<ISorteo, ServiceSorteo>();
 builder.Services.AddSingleton<Utilidades>();
 
-
 builder.Services.AddSingleton<IEncriptado>(new ServiceEncriptado());
 
 builder.Services.AddAuthentication(config =>
