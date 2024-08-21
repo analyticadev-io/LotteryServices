@@ -5,6 +5,7 @@ using LotteryServices.Models;
 using LotteryServices.Utilitys;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Newtonsoft.Json;
 
 namespace LotteryServices.Controllers
 {
@@ -76,21 +77,6 @@ namespace LotteryServices.Controllers
             }
         }
 
-        //[HttpPost]
-        //[Route("Login")]
-        //public async Task<IActionResult> Login(LoginDto loginDto)
-        //{
-        //    var (isSuccess, token) = await _loginService.LoginAsync(loginDto);
-
-        //    if (!isSuccess)
-        //    {
-        //        return Unauthorized(new { isSuccess = false, message = "Invalid username or password." });
-        //    }
-
-        //    return Ok(new { isSuccess = true, token });
-        //}
-
-
         [HttpPost]
         [Route("Login")]
         public async Task<IActionResult> Login(LoginDto loginDto)
@@ -110,8 +96,11 @@ namespace LotteryServices.Controllers
                 return Unauthorized(new { isSuccess = false, message = "Invalid username or password." });
             }
 
+            string serializedToken = JsonConvert.SerializeObject(token);
+            var encryptedResponse = _encriptadoService.Encrypt(serializedToken);
+
             // Aquí puedes cifrar el token si es necesario
-            return Ok(new { isSuccess = true, token });
+            return Ok(new { isSuccess = true, encryptedResponse });
         }
 
 
