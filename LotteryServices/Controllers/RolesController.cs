@@ -5,6 +5,8 @@ using LotteryServices.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace LotteryServices.Controllers
 {
@@ -14,11 +16,16 @@ namespace LotteryServices.Controllers
     public class RolesController : ControllerBase
     {
         private readonly IRol _serviceRol;
+        private readonly IEncriptado _encriptService;
 
-        public RolesController(IRol servicerol)
+        public RolesController(IRol serviceRol, IEncriptado encriptService)
         {
-            _serviceRol = servicerol;
+            _serviceRol = serviceRol;
+            _encriptService = encriptService;
         }
+
+
+
 
         //GET : /api/Roles
         [HttpGet]
@@ -30,34 +37,77 @@ namespace LotteryServices.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Rol>>> addRol(Rol rol)
-        {
-            var nuevorol = await _serviceRol.AddRolWithPermissionsAsync(rol);
-            return Ok(nuevorol);
-
-        }
-
-
-        //[HttpGet("{id}")]
-        //public async Task<ActionResult<IEnumerable<Rol>>> GetRol(int id)
-        //{
-        //    var rol = await _serviceRol.GetRolByIdAsync(id);
-        //    return Ok(rol);
-
-        //}
-
-        [HttpPut]
-        public async Task<ActionResult<Rol>> UpdateRol( Rol rol)
+        public async Task<ActionResult<IEnumerable<Rol>>> addRol(EncryptedRequest crypt)
         {
             try
             {
+                // Decrypt the encrypted role data
+                var decryptedRol = _encriptService.Decrypt(crypt.response);
+
+                // Deserialize the decrypted data to a Rol object
+                var rol = JsonConvert.DeserializeObject<Rol>(decryptedRol);
+                if (rol == null)
+                {
+                    return BadRequest("Invalid role data.");
+                }
+
+                // Add the role with its associated permissions
+                var nuevorol = await _serviceRol.AddRolWithPermissionsAsync(rol);
+                if (nuevorol == null)
+                {
+                    return StatusCode(500, "Failed to add role.");
+                }
+
+                // Serialize the newly created role back to JSON
+                string serializedRol = JsonConvert.SerializeObject(nuevorol);
+
+                // Encrypt the serialized JSON          
+                return Ok(new EncryptedResponse { response = _encriptService.Encrypt(serializedRol) });
+            }
+            catch (JsonException ex)
+            {
+                // Handle JSON deserialization errors
+                return BadRequest($"Invalid JSON data: {ex.Message}");
+            }
+            catch (InvalidOperationException ex)
+            {
+                // Handle decryption errors
+                return BadRequest($"Decryption error: {ex.Message}");
+            }
+            catch (Exception ex)
+            {
+                // Handle any other errors
+                return StatusCode(500, $"Internal server error: {ex.Message}");
+            }
+        }
+
+
+
+        [HttpPut]
+        public async Task<ActionResult<Rol>> UpdateRol(EncryptedRequest crypt)
+        {
+            try
+            {
+                // Decrypt the encrypted role data
+                var decryptedRol = _encriptService.Decrypt(crypt.response);
+
+                // Deserialize the decrypted data to a Rol object
+                var rol = JsonConvert.DeserializeObject<Rol>(decryptedRol);
+                if (rol == null)
+                {
+                    return BadRequest("Invalid role data.");
+                }
+
                 var updatedRol = await _serviceRol.UpdateWithPermissionsRolsync(rol);
                 if (updatedRol == null)
                 {
                     return NotFound("Rol no encontrado.");
                 }
 
-                return Ok(updatedRol);
+                // Serialize the newly created role back to JSON
+                string serializedRol = JsonConvert.SerializeObject(updatedRol);
+
+                return Ok(new EncryptedResponse { response = _encriptService.Encrypt(serializedRol) });
             }
             catch (Exception ex)
             {
@@ -67,17 +117,19 @@ namespace LotteryServices.Controllers
         }
 
         [HttpDelete("{rolId}")]
-        public async Task<ActionResult> DeleteRol(int rolId)
+        public async Task<ActionResult> DeleteRol(string rolId)
         {
             try
             {
-                var result = await _serviceRol.DeleteRolAsync(rolId);
+                var decryptedId = _encriptService.Decrypt(rolId);
+
+                var result = await _serviceRol.DeleteRolAsync(Convert.ToInt32(decryptedId));
                 if (!result)
                 {
                     return NotFound("Rol no encontrado.");
                 }
 
-                return NoContent(); // 204 No Content, ya que la eliminación fue exitosa
+                return Ok(new EncryptedResponse { response="OK"}); // 204 No Content, ya que la eliminación fue exitosa
             }
             catch (Exception)
             {

@@ -121,6 +121,8 @@ namespace LotteryServices.Services
                     throw new Exception("Rol no encontrado");
                 }
 
+                rolToUpdate.Nombre=rol.Nombre;
+
                 rolToUpdate.Permisos.Clear();
                 foreach (var permisoId in rol.Permisos.Select(p => p.PermisoId))
                 {
@@ -130,6 +132,8 @@ namespace LotteryServices.Services
                         rolToUpdate.Permisos.Add(permiso);
                     }
                 }
+
+
 
                 _context.Rols.Update(rolToUpdate);
                 await _context.SaveChangesAsync();
