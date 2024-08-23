@@ -32,7 +32,14 @@ namespace LotteryServices.Controllers
         public async Task<ActionResult<IEnumerable<Rol>>> GetRoles()
         {
             var roles = await _serviceRol.GetRolesAsync();
-            return Ok(roles);
+            
+            var jsonResponse = JsonConvert.SerializeObject(roles);
+            var encryptedResponse = new EncryptedResponse
+            {
+                response = _encriptService.Encrypt(jsonResponse)
+            };
+
+            return Ok(encryptedResponse);
 
         }
 
