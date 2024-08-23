@@ -79,14 +79,16 @@ namespace LotteryServices.Controllers
 
         [HttpPost]
         [Route("Login")]
-        public async Task<IActionResult> Login(LoginDto loginDto)
+        public async Task<IActionResult> Login(EncryptedRequest login)
         {
-            // Cifra los datos de inicio de sesión
-            var decryptedPassword = _encriptadoService.Decrypt(loginDto.Contrasena);
+            //desifra lo datos recibidos
+            var decryptedRequest = _encriptadoService.Decrypt(login.response);
+            var objRequest = JsonConvert.DeserializeObject<Usuario>(decryptedRequest);
+
             var loginRequest = new LoginDto
             {
-                NombreUsuario = loginDto.NombreUsuario,
-                Contrasena = decryptedPassword
+                NombreUsuario = objRequest.NombreUsuario,
+                Contrasena = objRequest.Contrasena,
             };
 
             var (isSuccess, token) = await _loginService.LoginAsync(loginRequest);
