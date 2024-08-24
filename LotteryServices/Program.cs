@@ -102,8 +102,14 @@ else
 
 var app = builder.Build();
 
-app.UseSwagger();
-app.UseSwaggerUI();
+if (!InProduction)
+{
+    app.UseSwagger();
+    app.UseSwaggerUI();
+}
+
+
+
 
 app.UseHttpsRedirection();
 app.UseRouting();
