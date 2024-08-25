@@ -1,9 +1,11 @@
-﻿using LotteryServices.Interfaces;
+﻿using LotteryServices.Dtos;
+using LotteryServices.Interfaces;
 using LotteryServices.Models;
 using LotteryServices.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace LotteryServices.Controllers
 {
@@ -14,42 +16,89 @@ namespace LotteryServices.Controllers
     public class SorteosController : Controller
     {
         private readonly ISorteo _serviceSorteo;
+        private readonly IEncriptado _serviceEncriptado;
 
-        public SorteosController(ISorteo serviceSorteo)
+        public SorteosController(ISorteo serviceSorteo, IEncriptado serviceEncriptado)
         {
             _serviceSorteo = serviceSorteo;
+            _serviceEncriptado = serviceEncriptado;
         }
+
+
 
         //GET : /api/Sorteos
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Sorteo>>> GetSorteos()
         {
             var sorteos = await _serviceSorteo.GetSorteosAsync();
-            return Ok(sorteos);
+
+            var jsonSorteos = JsonConvert.SerializeObject(sorteos);
+            var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
+            var req = new EncryptedResponse
+            {
+                response = encryptRequest,
+            };
+
+            return Ok(req);
         }
 
         //GET : /api/Sorteos
         [HttpPut]
-        public async Task<ActionResult<IEnumerable<Sorteo>>> EditSorteo(Sorteo sorteo)
+        public async Task<ActionResult<IEnumerable<Sorteo>>> EditSorteo(EncryptedRequest sorteo)
         {
-            var sorteos = await _serviceSorteo.EditSorteoAsync(sorteo);
-            return Ok(sorteos);
+            var decryptedResponse = _serviceEncriptado.Decrypt(sorteo.response);
+            var sorteoObj = JsonConvert.DeserializeObject<Sorteo>(decryptedResponse);
+
+            var editedSorteo = await _serviceSorteo.EditSorteoAsync(sorteoObj);
+
+            var jsonSorteos = JsonConvert.SerializeObject(editedSorteo);
+            var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
+            var req = new EncryptedResponse
+            {
+                response = encryptRequest,
+            };
+
+            return Ok(req);
+            
         }
 
         [HttpPost]
-        public async Task<ActionResult<IEnumerable<Sorteo>>> AddSorteo(Sorteo sorteo)
+        public async Task<ActionResult<IEnumerable<Sorteo>>> AddSorteo(EncryptedRequest sorteo)
         {
-            var sorteos = await _serviceSorteo.AddSorteoAsync(sorteo);
-            return Ok(sorteos);
+            var decryptedResponse = _serviceEncriptado.Decrypt(sorteo.response);
+            var sorteoObj = JsonConvert.DeserializeObject<Sorteo>(decryptedResponse);
+
+            var sorteoAdd = await _serviceSorteo.AddSorteoAsync(sorteoObj);
+
+            var jsonSorteos = JsonConvert.SerializeObject(sorteoAdd);
+            var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
+            var req = new EncryptedResponse
+            {
+                response = encryptRequest,
+            };
+
+            return Ok(req);
+
         }
 
-        [HttpDelete("{id}")]
-        public async Task<ActionResult<IEnumerable<bool>>> DeleteSorteo(int id)
+        [HttpDelete("{encryptedId}")]
+        public async Task<ActionResult<IEnumerable<bool>>> DeleteSorteo(string  encryptedId)
         {
-            var sorteos = await _serviceSorteo.DeleteSorteoAsync(id);
+
+            var decryptedId = _serviceEncriptado.Decrypt(encryptedId);
+
+
+            var sorteos = await _serviceSorteo.DeleteSorteoAsync(Convert.ToInt32(decryptedId));
             if (sorteos)
             {
-                return Ok();
+                var jsonSorteos = JsonConvert.SerializeObject(sorteos);
+                var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
+                var req = new EncryptedResponse
+                {
+                    response = encryptRequest,
+                };
+
+                return Ok(req);
             }
             else
             {
