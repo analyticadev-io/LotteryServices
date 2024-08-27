@@ -72,7 +72,17 @@ namespace LotteryServices.Services
             return await _context.Sorteos.FindAsync(id);
         }
 
-        public async Task<IEnumerable> GetSorteosAsync()
+        public async Task<IEnumerable> GetSorteosActiveAsync()
+        {
+            return await _context.Sorteos.Where(s=>s.Status== "active").ToListAsync();
+        }
+
+        public async Task<IEnumerable> GetSorteosCompleteAsync()
+        {
+            return await _context.Sorteos.Where(s => s.Status == "active").ToListAsync();
+        }
+
+        public async Task<IEnumerable> GetAllStatusSorteosAsync()
         {
             return await _context.Sorteos.ToListAsync();
         }

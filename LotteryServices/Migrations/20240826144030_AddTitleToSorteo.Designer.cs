@@ -4,6 +4,7 @@ using LotteryServices.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LotteryServices.Migrations
 {
     [DbContext(typeof(LoteriaDbContext))]
-    partial class LoteriaDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240826144030_AddTitleToSorteo")]
+    partial class AddTitleToSorteo
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -101,8 +104,8 @@ namespace LotteryServices.Migrations
                         .HasColumnType("int")
                         .HasColumnName("BoletoID");
 
-                    b.Property<long>("Numero")
-                        .HasColumnType("bigint");
+                    b.Property<int>("Numero")
+                        .HasColumnType("int");
 
                     b.HasKey("NumeroBoletoId")
                         .HasName("PK__NumerosB__CF017B1BAA2D14AC");

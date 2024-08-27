@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace LotteryServices.Models;
 
@@ -13,9 +14,10 @@ public partial class Boleto
 
     public DateTime? FechaCompra { get; set; }
 
-    public virtual ICollection<NumerosBoleto> NumerosBoletos { get; } = new List<NumerosBoleto>();
-
+    [JsonIgnore]
+    public virtual ICollection<NumerosBoleto> NumerosBoletos { get; set; } = new List<NumerosBoleto>();
+    [JsonIgnore]
     public virtual Sorteo Sorteo { get; set; } = null!;
-
+    [JsonIgnore]
     public virtual Usuario Usuario { get; set; } = null!;
 }

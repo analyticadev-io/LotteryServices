@@ -42,6 +42,7 @@ builder.Services.AddScoped<IRol, ServiceRol>();
 builder.Services.AddScoped<IPermiso, ServicePermiso>();
 builder.Services.AddScoped<IModule, ServiceModule>();
 builder.Services.AddScoped<ISorteo, ServiceSorteo>();
+builder.Services.AddScoped<IBoleto, ServiceBoleto>();
 builder.Services.AddSingleton<Utilidades>();
 
 builder.Services.AddSingleton<IEncriptado>(new ServiceEncriptado());
