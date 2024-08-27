@@ -18,13 +18,25 @@ namespace LotteryServices.Services
 
         public async Task<Boleto> AddBoletoAsync(Boleto boleto)
         {
+            var existingBoletoForSorteo = _context.Sorteos
+        .Include(s => s.Boletos)
+        .Where(s => s.SorteoId == boleto.SorteoId)
+        .SelectMany(s => s.Boletos)
+        .Any(b => b.NumerosBoletos.Any(nb => boleto.NumerosBoletos.Select(bn => bn.Numero).Contains(nb.Numero)));
+
+
+            if (existingBoletoForSorteo)
+            {
+                // Opcional: Lanzar una excepción o retornar null si ya existe
+                throw new InvalidOperationException("Ya existe un boleto con esos números en el sorteo.");
+            }
+
             var newBoleto = new Boleto{
                 UsuarioId = boleto.UsuarioId,
-                SorteoId = boleto.SorteoId,
-                //NumerosBoletos=boleto.NumerosBoletos,
+                SorteoId = boleto.SorteoId                
             };
             newBoleto.NumerosBoletos=boleto.NumerosBoletos;
-            var addBoleto = _context.Boletos.Add(boleto);
+            _context.Boletos.Add(newBoleto);
             await _context.SaveChangesAsync();
             return newBoleto;
         }
