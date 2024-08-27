@@ -9,6 +9,7 @@ public partial class Sorteo
 
     public DateTime FechaSorteo { get; set; }
 
+    public string? Title { get; set; }
     public string? Descripcion { get; set; }
     public string? Status { get; set; }
 

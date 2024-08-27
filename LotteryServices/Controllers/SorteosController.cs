@@ -30,7 +30,7 @@ namespace LotteryServices.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Sorteo>>> GetSorteos()
         {
-            var sorteos = await _serviceSorteo.GetSorteosAsync();
+            var sorteos = await _serviceSorteo.GetAllStatusSorteosAsync();
 
             var jsonSorteos = JsonConvert.SerializeObject(sorteos);
             var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);

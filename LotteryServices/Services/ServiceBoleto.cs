@@ -1,0 +1,100 @@
+﻿using LotteryServices.Dtos;
+using LotteryServices.Interfaces;
+using LotteryServices.Models;
+using Microsoft.EntityFrameworkCore;
+
+namespace LotteryServices.Services
+{
+    public class ServiceBoleto : IBoleto
+    {
+        private readonly LoteriaDbContext _context;
+        private readonly LoteriaDbContext _servicioEncriptado;
+
+        public ServiceBoleto(LoteriaDbContext context, LoteriaDbContext servicioEncriptado)
+        {
+            _context = context;
+            _servicioEncriptado = servicioEncriptado;
+        }
+
+        public async Task<Boleto> AddBoletoAsync(Boleto boleto)
+        {
+            var newBoleto = new Boleto{
+                UsuarioId = boleto.UsuarioId,
+                SorteoId = boleto.SorteoId,
+                //NumerosBoletos=boleto.NumerosBoletos,
+            };
+            newBoleto.NumerosBoletos=boleto.NumerosBoletos;
+            var addBoleto = _context.Boletos.Add(boleto);
+            await _context.SaveChangesAsync();
+            return newBoleto;
+        }
+
+        public Task<bool> DeleteBoletoAsync(int boleto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<Boleto> EditBoletoAsync(Boleto boleto)
+        {
+            throw new NotImplementedException();
+        }
+
+        public async Task<IEnumerable<Boleto>> GetBoletosAsync()
+        {
+            return await _context.Boletos.ToListAsync();
+        }
+
+        public async Task<Boleto> GetBoletoByNumAsync(int numeroBoleto)
+        {
+            var existingBoleto = await _context.Boletos
+                .FirstOrDefaultAsync(b => b.NumerosBoletos.Any(nb => nb.Numero == numeroBoleto));
+
+            return existingBoleto;
+        }
+
+        public async Task<ICollection<Boleto>> GetBoletoActiveByUserAsync(int userId)
+        {
+            // Obtiene el usuario con sus boletos asociados
+            var user = await _context.Usuarios
+               .Include(u => u.Boletos)
+               .ThenInclude(b=>b.NumerosBoletos)// Incluye los boletos asociados al usuario
+               .Include(u => u.Boletos)
+               .ThenInclude(b => b.Sorteo)
+               .FirstOrDefaultAsync(u => u.UsuarioId == userId);
+
+            if (user == null)
+            {
+                // Devuelve una colección vacía si el usuario no se encuentra
+                return new List<Boleto>();
+            }
+
+            var boletosActivos = user.Boletos.Where(b => b.Sorteo != null && b.Sorteo.Status=="active").ToList();
+
+            // Retorna la colección de boletos del usuario
+            return boletosActivos;
+        }
+
+        public async Task<ICollection<Boleto>> GetBoletoCompleteByUserAsync(int userId)
+        {
+            // Obtiene el usuario con sus boletos asociados
+            var user = await _context.Usuarios
+               .Include(u => u.Boletos)
+               .ThenInclude(b => b.NumerosBoletos)// Incluye los boletos asociados al usuario
+               .Include(u => u.Boletos)
+               .ThenInclude(b => b.Sorteo)
+               .FirstOrDefaultAsync(u => u.UsuarioId == userId);
+
+            if (user == null)
+            {
+                // Devuelve una colección vacía si el usuario no se encuentra
+                return new List<Boleto>();
+            }
+
+            var boletosActivos = user.Boletos.Where(b => b.Sorteo != null && b.Sorteo.Status == "complete").ToList();
+
+            // Retorna la colección de boletos del usuario
+            return boletosActivos;
+        }
+
+    }
+}
