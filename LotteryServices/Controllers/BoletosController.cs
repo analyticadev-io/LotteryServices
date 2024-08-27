@@ -26,28 +26,40 @@ namespace LotteryServices.Controllers
         }
 
         [HttpPost]
-        public async Task<ActionResult<Boleto>> AddBoleto(EncryptedRequest module)
+        public async Task<ActionResult<EncryptedResponse>> AddBoleto(EncryptedRequest module)
         {
-            var decryptedRequest = _encryptService.Decrypt(module.response);
-            var objResponse = JsonConvert.DeserializeObject<Boleto>(decryptedRequest);
-
-            var newModule = await _boletoService.AddBoletoAsync(objResponse);
-
-            var jsonSettings = new JsonSerializerSettings
+            try
             {
-                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
-            };
+                // Desencriptar y deserializar la solicitud
+                var decryptedRequest = _encryptService.Decrypt(module.response);
+                var boleto = JsonConvert.DeserializeObject<Boleto>(decryptedRequest);
 
-            var JsonResponse = JsonConvert.SerializeObject(newModule, jsonSettings);
-            var encryptResponse = _encryptService.Encrypt(JsonResponse);
+                // Intentar agregar el boleto
+                var newBoleto = await _boletoService.AddBoletoAsync(boleto);
 
-            var crypt = new EncryptedResponse
+                // Serializar y encriptar la respuesta
+                var jsonSettings = new JsonSerializerSettings
+                {
+                    ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+                };
+
+                var jsonResponse = JsonConvert.SerializeObject(newBoleto, jsonSettings);
+                var encryptResponse = _encryptService.Encrypt(jsonResponse);
+
+                return Ok(new EncryptedResponse { response = encryptResponse });
+            }
+            catch (InvalidOperationException ex)
             {
-                response = encryptResponse,
-            };
-
-            return Ok(crypt);
+                // Manejar casos específicos como "Ya existe un boleto con esos números en el sorteo"
+                return BadRequest(new { error = ex.Message });
+            }
+            catch (Exception ex)
+            {
+                // Manejar errores generales
+                return StatusCode(StatusCodes.Status500InternalServerError, new { error = "Ocurrió un error al procesar la solicitud." });
+            }
         }
+
 
         [HttpGet("{idUser}")]
         public async Task<ActionResult<Boleto>> GetUserBoleto(string idUser)
