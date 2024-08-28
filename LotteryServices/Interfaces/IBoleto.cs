@@ -11,6 +11,7 @@ namespace LotteryServices.Interfaces
 
         Task<bool> DeleteBoletoAsync(int boleto);
         Task<Boleto> GetBoletoByNumAsync(int boleto);
+        Task<ICollection<Boleto>> GetAllBoletoByUserAsync(int userId);
         Task<ICollection<Boleto>> GetBoletoActiveByUserAsync(int userId);
         Task<ICollection<Boleto>> GetBoletoCompleteByUserAsync(int userId);
     }

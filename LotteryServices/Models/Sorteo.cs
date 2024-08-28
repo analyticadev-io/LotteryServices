@@ -15,5 +15,5 @@ public partial class Sorteo
 
     public virtual ICollection<Boleto> Boletos { get; } = new List<Boleto>();
 
-    public virtual ICollection<NumerosSorteo> NumerosSorteos { get; } = new List<NumerosSorteo>();
+    public virtual ICollection<NumerosSorteo> NumerosSorteos { get; set; } = new List<NumerosSorteo>();
 }

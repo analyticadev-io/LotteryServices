@@ -17,9 +17,10 @@ namespace LotteryServices.Services
 
         public async Task<Sorteo> AddSorteoAsync(Sorteo sorteo)
         {
-            var newSorteo= new Sorteo();
-            newSorteo.Descripcion=sorteo.Descripcion;
-            newSorteo.FechaSorteo=sorteo.FechaSorteo;
+            var newSorteo = new Sorteo();
+            newSorteo.Title = sorteo.Title;
+            newSorteo.Descripcion = sorteo.Descripcion;
+            newSorteo.FechaSorteo = sorteo.FechaSorteo;
             newSorteo.Status = "active";
             _context.Sorteos.Add(newSorteo);
             await _context.SaveChangesAsync();
@@ -50,6 +51,7 @@ namespace LotteryServices.Services
 
             if (existingSorteo != null)
             {
+                existingSorteo.Title = sorteo.Title;
                 existingSorteo.FechaSorteo = sorteo.FechaSorteo;
                 existingSorteo.Descripcion = sorteo.Descripcion;
                 existingSorteo.Status = "active";
@@ -74,7 +76,7 @@ namespace LotteryServices.Services
 
         public async Task<IEnumerable> GetSorteosActiveAsync()
         {
-            return await _context.Sorteos.Where(s=>s.Status== "active").ToListAsync();
+            return await _context.Sorteos.Where(s => s.Status == "active").ToListAsync();
         }
 
         public async Task<IEnumerable> GetSorteosCompleteAsync()
@@ -84,7 +86,44 @@ namespace LotteryServices.Services
 
         public async Task<IEnumerable> GetAllStatusSorteosAsync()
         {
-            return await _context.Sorteos.ToListAsync();
+            return await _context.Sorteos.Include(s=>s.NumerosSorteos).ToListAsync();
         }
+
+        public async Task<Sorteo> SaveSorteoWinnerAsync(Sorteo sorteo)
+        {
+            // Busca el sorteo existente por su ID
+            var existingSorteo = await _context.Sorteos
+                .Include(s => s.NumerosSorteos) // Asegúrate de incluir NumerosSorteos si es necesario
+                .FirstOrDefaultAsync(s => s.SorteoId == sorteo.SorteoId);
+
+            if (existingSorteo != null)
+            {
+                // Actualiza el estado y los números del sorteo
+                existingSorteo.Status = "complete";
+                existingSorteo.NumerosSorteos = sorteo.NumerosSorteos;
+
+                // Marca el objeto como modificado y guarda los cambios
+                _context.Sorteos.Update(existingSorteo);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Manejo de excepciones específico para errores de actualización
+                    throw new Exception("Error al guardar el número ganador del sorteo", ex);
+                }
+
+                return existingSorteo;
+            }
+            else
+            {
+                // Manejo del caso donde el sorteo no se encuentra
+                throw new KeyNotFoundException("Sorteo no encontrado con el ID proporcionado.");
+            }
+        }
+
+
     }
 }
