@@ -9,7 +9,7 @@ public partial class NumerosSorteo
 
     public int SorteoId { get; set; }
 
-    public int Numero { get; set; }
+    public long Numero { get; set; }
 
     public virtual Sorteo Sorteo { get; set; } = null!;
 }
