@@ -12,5 +12,7 @@ namespace LotteryServices.Interfaces
         Task<IEnumerable> GetSorteosCompleteAsync();
         Task<IEnumerable> GetAllStatusSorteosAsync();
         Task<Sorteo> GetSorteoByIdAsync(int id);
+
+        Task<Sorteo> SaveSorteoWinnerAsync(Sorteo sorteo);
     }
 }

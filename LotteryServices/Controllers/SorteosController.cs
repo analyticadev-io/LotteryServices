@@ -32,7 +32,12 @@ namespace LotteryServices.Controllers
         {
             var sorteos = await _serviceSorteo.GetAllStatusSorteosAsync();
 
-            var jsonSorteos = JsonConvert.SerializeObject(sorteos);
+            var jsonSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            var jsonSorteos = JsonConvert.SerializeObject(sorteos, jsonSettings);
             var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
             var req = new EncryptedResponse
             {
@@ -105,6 +110,31 @@ namespace LotteryServices.Controllers
                 return NotFound();
             }
             
+        }
+
+
+        [HttpPut("win/")]
+        public async Task<ActionResult<IEnumerable<Sorteo>>> WinSorteo(EncryptedRequest sorteo)
+        {
+            var decryptedResponse = _serviceEncriptado.Decrypt(sorteo.response);
+            var sorteoObj = JsonConvert.DeserializeObject<Sorteo>(decryptedResponse);
+
+            var editedSorteo = await _serviceSorteo.SaveSorteoWinnerAsync(sorteoObj);
+
+            var jsonSettings = new JsonSerializerSettings
+            {
+                ReferenceLoopHandling = ReferenceLoopHandling.Ignore
+            };
+
+            var jsonSorteos = JsonConvert.SerializeObject(editedSorteo, jsonSettings);
+            var encryptRequest = _serviceEncriptado.Encrypt(jsonSorteos);
+            var req = new EncryptedResponse
+            {
+                response = encryptRequest,
+            };
+
+            return Ok(req);
+
         }
 
 
