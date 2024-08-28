@@ -65,7 +65,7 @@ namespace LotteryServices.Controllers
         public async Task<ActionResult<Boleto>> GetUserBoleto(string idUser)
         {
             var decryptedRequest = _encryptService.Decrypt(idUser);
-            var userBoletos = await _boletoService.GetBoletoActiveByUserAsync(Convert.ToInt32(decryptedRequest));
+            var userBoletos = await _boletoService.GetAllBoletoByUserAsync(Convert.ToInt32(decryptedRequest));
 
             var jsonSettings = new JsonSerializerSettings
             {
