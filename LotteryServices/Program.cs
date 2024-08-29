@@ -139,7 +139,7 @@ else
 //builder.Services.AddHangfireServer();
 
 var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
-var certificateFilePath = "/etc/secrets/my_certificate.pem";
+var certificateFilePath = builder.Configuration["/etc/secrets/my_certificate.pem"];
 string hangfireCertificate = File.ReadAllText(certificateFilePath);
 var hangfireConnectionStringWithSsl = $"{hangfireConnectionString};SslCa={hangfireCertificate};";
 
