@@ -149,7 +149,7 @@ else
     //var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
     //Console.WriteLine("SSL ABSOLUTE PATH: " + sslCaAbsolutePath);
     var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
-    var certificate = builder.Configuration["/etc/secrets/my_certificate.pem"];
+    var certificate = builder.Configuration["/etc/secrets/ca.pem"];
     Console.WriteLine("CADENASIN SSL: " + hangfireConnectionStringSinSSL);
     var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={certificate};";
     Console.WriteLine("CADENA CON SSL: " + hangfireConnectionString);
