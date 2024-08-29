@@ -117,28 +117,10 @@ else
  * HANGFIRE
  * 
  * **/
-
 //var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
 //var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 //var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
-
-//builder.Services.AddHangfire(config =>
-//{
-//    config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
-//    {
-//        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
-//        QueuePollInterval = TimeSpan.FromSeconds(15),
-//        JobExpirationCheckInterval = TimeSpan.FromHours(1),
-//        CountersAggregateInterval = TimeSpan.FromMinutes(5),
-//        PrepareSchemaIfNecessary = true,
-//        DashboardJobListLimit = 50000,
-//        TransactionTimeout = TimeSpan.FromMinutes(1),
-//        TablesPrefix = "Hangfire"
-//    }));
-//});
-//builder.Services.AddHangfireServer();
-
-var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
 var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
 var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 
