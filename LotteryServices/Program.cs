@@ -145,9 +145,13 @@ if (!InProduction)
 else
 {
     var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+    Console.WriteLine("SSL RELATIVE PATH: " + sslCaRelativePath);
     var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+    Console.WriteLine("SSL ABSOLUTE PATH: " + sslCaAbsolutePath);
     var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+    Console.WriteLine("CADENASIN SSL: " + hangfireConnectionStringSinSSL);
     var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+    Console.WriteLine("CADENA CON SSL: " + hangfireConnectionString);
 
     builder.Services.AddHangfire(config =>
     {
