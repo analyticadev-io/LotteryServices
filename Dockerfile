@@ -20,7 +20,7 @@ RUN dotnet publish ./LotteryServices/LotteryServices.csproj -c Release -o /app/o
 FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS runtime
 WORKDIR /app
 COPY --from=build /app/output .
-COPY --from=build /app/Utilitys ./Utilitys  # Copiar la carpeta Utilitys a la etapa de ejecución
+COPY --from=build /app/Utilitys ./Utilitys
 
 # Exponer los puertos que la aplicación usará
 EXPOSE 80
