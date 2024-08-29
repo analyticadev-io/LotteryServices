@@ -138,6 +138,8 @@ var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAb
 Console.WriteLine("Cadena de conexión con SSL:");
 Console.WriteLine(hangfireConnectionString);
 
+
+
 builder.Services.AddHangfire(config =>
 {
     config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
