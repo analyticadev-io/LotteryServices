@@ -120,10 +120,26 @@ else
 //var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
 //var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 //var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
+
 var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
 var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"]; // Asegúrate de definir esta variable
 var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+
+// Debugging: Ver la cadena de conexión sin SSL
+Console.WriteLine("Cadena de conexión sin SSL:");
+Console.WriteLine(hangfireConnectionStringSinSSL);
+
+// Debugging: Ver la ruta absoluta del certificado SSL
+Console.WriteLine("Ruta absoluta del certificado SSL:");
+Console.WriteLine(sslCaAbsolutePath);
+
 var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+
+// Debugging: Ver la cadena de conexión final con SSL
+Console.WriteLine("Cadena de conexión con SSL:");
+Console.WriteLine(hangfireConnectionString);
+var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+
 
 builder.Services.AddHangfire(config =>
 {
