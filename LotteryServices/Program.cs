@@ -37,8 +37,11 @@ if (InProduction)
 }
 else
 {
-    builder.Services.AddDbContext<LoteriaDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
+   
+var connectionString = builder.Configuration["LotteryConStringPROD"];
+
+builder.Services.AddDbContext<LoteriaDbContext>(options =>
+    options.UseSqlServer(connectionString));
 
 }
 
