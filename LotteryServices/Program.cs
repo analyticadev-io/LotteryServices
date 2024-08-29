@@ -138,14 +138,27 @@ else
 //});
 //builder.Services.AddHangfireServer();
 
-var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
 var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
 var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
-var hangfireConnectionStringWithSsl = $"{hangfireConnectionString};SslCa={sslCaAbsolutePath};";
+
+// Debugging: Ver la cadena de conexión sin SSL
+Console.WriteLine("Cadena de conexión sin SSL:");
+Console.WriteLine(hangfireConnectionStringSinSSL);
+
+// Debugging: Ver la ruta absoluta del certificado SSL
+Console.WriteLine("Ruta absoluta del certificado SSL:");
+Console.WriteLine(sslCaAbsolutePath);
+
+var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+
+// Debugging: Ver la cadena de conexión final con SSL
+Console.WriteLine("Cadena de conexión con SSL:");
+Console.WriteLine(hangfireConnectionString);
 
 builder.Services.AddHangfire(config =>
 {
-    config.UseStorage(new MySqlStorage(hangfireConnectionStringWithSsl, new MySqlStorageOptions
+    config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
     {
         TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
         QueuePollInterval = TimeSpan.FromSeconds(15),
@@ -158,6 +171,7 @@ builder.Services.AddHangfire(config =>
     }));
 });
 builder.Services.AddHangfireServer();
+
 
 
 //--------------
