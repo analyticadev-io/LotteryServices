@@ -5,8 +5,10 @@ using LotteryServices.Utilitys;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 using System.Text;
-
+using System.Transactions;
 using LotteryServices.Models;
+using Hangfire;
+using Hangfire.MySql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -33,9 +35,9 @@ builder.Services.AddControllers(); // Add this line to include controllers
 if (InProduction)
 {
     var connectionString = builder.Configuration["LotteryConStringPROD"];
-    
-   builder.Services.AddDbContext<LoteriaDbContext>(options =>
-    options.UseSqlServer(connectionString));
+
+  builder.Services.AddDbContext<LoteriaDbContext>(options =>
+     options.UseSqlServer(connectionString));
 }
 else
 {
@@ -111,6 +113,53 @@ else
 }
 
 
+/**
+ * HANGFIRE
+ * 
+ * **/
+
+//var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+//var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+//var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
+
+//builder.Services.AddHangfire(config =>
+//{
+//    config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
+//    {
+//        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+//        QueuePollInterval = TimeSpan.FromSeconds(15),
+//        JobExpirationCheckInterval = TimeSpan.FromHours(1),
+//        CountersAggregateInterval = TimeSpan.FromMinutes(5),
+//        PrepareSchemaIfNecessary = true,
+//        DashboardJobListLimit = 50000,
+//        TransactionTimeout = TimeSpan.FromMinutes(1),
+//        TablesPrefix = "Hangfire"
+//    }));
+//});
+//builder.Services.AddHangfireServer();
+
+var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+var hangfireCertificate = builder.Configuration["Certificate_CA"];
+var hangfireConnectionStringWithSsl = $"{hangfireConnectionString}SslCa={hangfireCertificate};";
+
+builder.Services.AddHangfire(config =>
+{
+    config.UseStorage(new MySqlStorage(hangfireConnectionStringWithSsl, new MySqlStorageOptions
+    {
+        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+        QueuePollInterval = TimeSpan.FromSeconds(15),
+        JobExpirationCheckInterval = TimeSpan.FromHours(1),
+        CountersAggregateInterval = TimeSpan.FromMinutes(5),
+        PrepareSchemaIfNecessary = true,
+        DashboardJobListLimit = 50000,
+        TransactionTimeout = TimeSpan.FromMinutes(1),
+        TablesPrefix = "Hangfire"
+    }));
+});
+builder.Services.AddHangfireServer();
+
+//--------------
+
 var app = builder.Build();
 
 if (!InProduction)
@@ -150,7 +199,8 @@ app.UseAuthorization();
 //    await next();
 //});
 
-
+// Configuración de Hangfire Dashboard
+app.UseHangfireDashboard();
 
 app.MapControllers(); // Map controller routes
 
