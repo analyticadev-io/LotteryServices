@@ -123,7 +123,7 @@ if (!InProduction)
 
     var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
     var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
-    var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
+    var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnectionProd") + $"SslCa={sslCaAbsolutePath};";
 
     builder.Services.AddHangfire(config =>
     {
