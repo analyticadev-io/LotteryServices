@@ -17,7 +17,7 @@ var builder = WebApplication.CreateBuilder(args);
  *---------------------- PRODUCTION VARIABLE -------------------------
  * convert to true, if you want to change to production configurations 
  * **/
-var InProduction = true;
+var InProduction = false;
 
 //--------------------------------------------------------------------
 
@@ -117,45 +117,55 @@ else
  * HANGFIRE
  * 
  * **/
-//var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
-//var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
-//var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
-var hangfireConnectionStringSinSSL = builder.Configuration["HangfireConnection"];
-var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
-var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 
-// Debugging: Ver la cadena de conexión sin SSL
-Console.WriteLine("Cadena de conexión sin SSL:");
-Console.WriteLine(hangfireConnectionStringSinSSL);
-
-// Debugging: Ver la ruta absoluta del certificado SSL
-Console.WriteLine("Ruta absoluta del certificado SSL:");
-Console.WriteLine(sslCaAbsolutePath);
-
-var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
-
-// Debugging: Ver la cadena de conexión final con SSL
-Console.WriteLine("Cadena de conexión con SSL:");
-Console.WriteLine(hangfireConnectionString);
-
-
-
-builder.Services.AddHangfire(config =>
+if (!InProduction)
 {
-    config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
-    {
-        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
-        QueuePollInterval = TimeSpan.FromSeconds(15),
-        JobExpirationCheckInterval = TimeSpan.FromHours(1),
-        CountersAggregateInterval = TimeSpan.FromMinutes(5),
-        PrepareSchemaIfNecessary = true,
-        DashboardJobListLimit = 50000,
-        TransactionTimeout = TimeSpan.FromMinutes(1),
-        TablesPrefix = "Hangfire"
-    }));
-});
-builder.Services.AddHangfireServer();
 
+    var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+    var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+    var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
+
+    builder.Services.AddHangfire(config =>
+    {
+        config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
+        {
+            TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+            QueuePollInterval = TimeSpan.FromSeconds(15),
+            JobExpirationCheckInterval = TimeSpan.FromHours(1),
+            CountersAggregateInterval = TimeSpan.FromMinutes(5),
+            PrepareSchemaIfNecessary = true,
+            DashboardJobListLimit = 50000,
+            TransactionTimeout = TimeSpan.FromMinutes(1),
+            TablesPrefix = "Hangfire"
+        }));
+    });
+    builder.Services.AddHangfireServer();
+
+}
+else
+{
+    var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+    var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+    var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+    var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+
+    builder.Services.AddHangfire(config =>
+    {
+        config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
+        {
+            TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+            QueuePollInterval = TimeSpan.FromSeconds(15),
+            JobExpirationCheckInterval = TimeSpan.FromHours(1),
+            CountersAggregateInterval = TimeSpan.FromMinutes(5),
+            PrepareSchemaIfNecessary = true,
+            DashboardJobListLimit = 50000,
+            TransactionTimeout = TimeSpan.FromMinutes(1),
+            TablesPrefix = "Hangfire"
+        }));
+    });
+    builder.Services.AddHangfireServer();
+
+}
 
 
 //--------------
