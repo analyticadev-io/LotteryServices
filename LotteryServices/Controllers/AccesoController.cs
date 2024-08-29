@@ -91,6 +91,11 @@ namespace LotteryServices.Controllers
                 Contrasena = objRequest.Contrasena,
             };
 
+            if (loginRequest.NombreUsuario == "" && loginRequest.Contrasena =="")
+            {
+
+            }
+
             var (isSuccess, token) = await _loginService.LoginAsync(loginRequest);
 
             if (!isSuccess)
