@@ -139,17 +139,15 @@ else
 //builder.Services.AddHangfireServer();
 
 var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
-//var hangfireCertificate = builder.Configuration["Certificate_CA"] ?? builder.Configuration["Certificate"];
 var certificateFilePath = "/etc/secrets/my_certificate.pem";
 string hangfireCertificate = File.ReadAllText(certificateFilePath);
 var hangfireConnectionStringWithSsl = $"{hangfireConnectionString};SslCa={hangfireCertificate};";
-//var hangfireConnectionStringWithSsl = $"{hangfireConnectionString}SslCa={hangfireCertificate};";
 
 builder.Services.AddHangfire(config =>
 {
     config.UseStorage(new MySqlStorage(hangfireConnectionStringWithSsl, new MySqlStorageOptions
     {
-        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+        TransactionIsolationLevel = System.Data.IsolationLevel.ReadCommitted,
         QueuePollInterval = TimeSpan.FromSeconds(15),
         JobExpirationCheckInterval = TimeSpan.FromHours(1),
         CountersAggregateInterval = TimeSpan.FromMinutes(5),
@@ -159,7 +157,9 @@ builder.Services.AddHangfire(config =>
         TablesPrefix = "Hangfire"
     }));
 });
+
 builder.Services.AddHangfireServer();
+
 
 //--------------
 
