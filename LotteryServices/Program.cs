@@ -117,10 +117,10 @@ else
  * HANGFIRE
  * 
  * **/
-var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
-var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
-var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
-
+//var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+//var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+//var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
+var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
 
 builder.Services.AddHangfire(config =>
 {
