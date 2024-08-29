@@ -120,8 +120,9 @@ else
 //var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
 //var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 //var hangfireConnectionString = builder.Configuration.GetConnectionString("HangfireConnection") + $"SslCa={sslCaAbsolutePath};";
-var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
-var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+
+var hangfireConnectionStringSinSSL = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
+var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"]; // Asegúrate de definir esta variable
 var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
 
 // Debugging: Ver la cadena de conexión sin SSL
@@ -137,12 +138,14 @@ var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAb
 // Debugging: Ver la cadena de conexión final con SSL
 Console.WriteLine("Cadena de conexión con SSL:");
 Console.WriteLine(hangfireConnectionString);
+var hangfireConnectionString = hangfireConnectionStringSinSSL + $"SslCa={sslCaAbsolutePath};";
+
 
 builder.Services.AddHangfire(config =>
 {
     config.UseStorage(new MySqlStorage(hangfireConnectionString, new MySqlStorageOptions
     {
-        TransactionIsolationLevel = (IsolationLevel)System.Data.IsolationLevel.ReadCommitted,
+        TransactionIsolationLevel = System.Data.IsolationLevel.ReadCommitted,
         QueuePollInterval = TimeSpan.FromSeconds(15),
         JobExpirationCheckInterval = TimeSpan.FromHours(1),
         CountersAggregateInterval = TimeSpan.FromMinutes(5),
