@@ -139,8 +139,9 @@ else
 //builder.Services.AddHangfireServer();
 
 var hangfireConnectionString = builder.Configuration["HANGFIRE_CONNECTION_STRING"];
-var hangfireCertificate = builder.Configuration["Certificate_CA"];
-var hangfireConnectionStringWithSsl = $"{hangfireConnectionString}SslCa={hangfireCertificate};";
+var sslCaRelativePath = builder.Configuration["SslSettings:SslCaPath"];
+var sslCaAbsolutePath = Path.Combine(Directory.GetCurrentDirectory(), sslCaRelativePath);
+var hangfireConnectionStringWithSsl = $"{hangfireConnectionString};SslCa={sslCaAbsolutePath};";
 
 builder.Services.AddHangfire(config =>
 {
@@ -157,6 +158,7 @@ builder.Services.AddHangfire(config =>
     }));
 });
 builder.Services.AddHangfireServer();
+
 
 //--------------
 
