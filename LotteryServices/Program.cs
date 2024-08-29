@@ -32,16 +32,16 @@ builder.Services.AddControllers(); // Add this line to include controllers
 
 if (InProduction)
 {
-    builder.Services.AddDbContext<LoteriaDbContext>(options =>
-        options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConStringPROD")));
+    var connectionString = builder.Configuration["LotteryConStringPROD"];
+    
+   builder.Services.AddDbContext<LoteriaDbContext>(options =>
+    options.UseSqlServer(connectionString));
 }
 else
 {
    
-var connectionString = builder.Configuration["LotteryConStringPROD"];
-
 builder.Services.AddDbContext<LoteriaDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(builder.Configuration.GetConnectionString("LotteryConString")));
 
 }
 
