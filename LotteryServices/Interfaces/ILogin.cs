@@ -9,6 +9,5 @@ namespace LotteryServices.Interfaces
         public Task RegistroAsync(Usuario usuario);
         Task<(bool IsSuccess, AuthResponseDto AuthResponse)> LoginAsync(LoginDto loginDto);     
 
-
     }
 }

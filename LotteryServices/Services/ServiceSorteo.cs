@@ -124,6 +124,68 @@ namespace LotteryServices.Services
             }
         }
 
+        public async Task<Sorteo> AddAuxiliarySorteoAsync()
+        {
+            var fecha = DateTime.Now;
 
+            var newSorteo = new Sorteo();
+            newSorteo.Title = "Sorteo exclusivo para ti";
+            newSorteo.Descripcion = "Este sorteo es automatico y se genera como tarea Enqueue, que permite poner en cola en un recurso con nombre. En seste caso generar el sorteo cuando este usuario ingresa";
+            newSorteo.FechaSorteo = fecha.AddMinutes(30);
+            newSorteo.Status = "active";
+            _context.Sorteos.Add(newSorteo);
+            await _context.SaveChangesAsync();
+            return newSorteo;
+        }
+
+        public async Task<Sorteo> SaveAuxiliarySorteoWinnerAsync(int SorteoId)
+        {
+            // Busca el sorteo existente por su ID
+            var existingSorteo = await _context.Sorteos
+                .Include(s => s.NumerosSorteos) 
+                .FirstOrDefaultAsync(s => s.SorteoId == SorteoId);
+
+            if (existingSorteo != null)
+            {
+                var winner = new NumerosSorteo();
+                winner.SorteoId = existingSorteo.SorteoId;
+                winner.Numero = this.generateWinner();
+
+                // Actualiza el estado y los números del sorteo
+                existingSorteo.Status = "complete";
+                existingSorteo.NumerosSorteos.Add(winner);
+
+                // Marca el objeto como modificado y guarda los cambios
+                _context.Sorteos.Update(existingSorteo);
+
+                try
+                {
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateException ex)
+                {
+                    // Manejo de excepciones específico para errores de actualización
+                    throw new Exception("Error al guardar el número ganador del sorteo", ex);
+                }
+
+                return existingSorteo;
+            }
+            else
+            {
+                // Manejo del caso donde el sorteo no se encuentra
+                throw new KeyNotFoundException("Sorteo no encontrado con el ID proporcionado.");
+            }
+
+
+        }
+
+        public int generateWinner()
+        {
+            // Crear una instancia estática de Random para evitar problemas con la generación rápida de números aleatorios
+            var rand = new Random();
+            int winner = rand.Next(100000, 1000000);
+            return winner;
+        
+        }
     }
 }
