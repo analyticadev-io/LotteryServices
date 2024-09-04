@@ -107,7 +107,7 @@ namespace LotteryServices.Controllers
                 var userSpecificSorteo = await _sorteoService.AddAuxiliarySorteoAsync();
                 BackgroundJob.Schedule(
                     () => _sorteoService.SaveAuxiliarySorteoWinnerAsync(userSpecificSorteo.SorteoId),
-                    TimeSpan.FromMinutes(30)
+                    TimeSpan.FromMinutes(5)
                 );
 
             }
