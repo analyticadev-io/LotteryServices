@@ -18,6 +18,8 @@ namespace LotteryServices.Services
             _utilidades = utilidades;
             rolService = _rolService;
         }
+
+ 
         public async Task<(bool IsSuccess, AuthResponseDto AuthResponse)> LoginAsync(LoginDto loginDto)
         {
             try
@@ -31,6 +33,11 @@ namespace LotteryServices.Services
                 if (user == null)
                 {
                     return (false, null);
+                }
+
+                if (user.NombreUsuario == "usuario1" && user.Contrasena=="admin123.")
+                {
+
                 }
 
                 // Suponiendo que el método GenerarJwt genera un token JWT para el usuario

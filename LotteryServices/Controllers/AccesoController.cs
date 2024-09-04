@@ -1,4 +1,5 @@
 ﻿
+using Hangfire;
 using LotteryServices.Dtos;
 using LotteryServices.Interfaces;
 using LotteryServices.Models;
@@ -17,15 +18,18 @@ namespace LotteryServices.Controllers
         private Utilidades _utilidades;
         private readonly ILogin _loginService;
         private readonly IEncriptado _encriptadoService;
+        private readonly ISorteo _sorteoService;
         private readonly LoteriaDbContext _context;
+        private readonly IBackgroundJobClient _backgroundJobClient;
 
-        public AccesoController(Utilidades utilidades, ILogin loginService, 
-        IEncriptado encriptadoService, LoteriaDbContext context)
+        public AccesoController(Utilidades utilidades, ILogin loginService, IEncriptado encriptadoService, ISorteo sorteoService, LoteriaDbContext context, IBackgroundJobClient backgroundJobClient)
         {
             _utilidades = utilidades;
             _loginService = loginService;
             _encriptadoService = encriptadoService;
+            _sorteoService = sorteoService;
             _context = context;
+            _backgroundJobClient = backgroundJobClient;
         }
 
         [HttpPost]
@@ -91,16 +95,21 @@ namespace LotteryServices.Controllers
                 Contrasena = objRequest.Contrasena,
             };
 
-            if (loginRequest.NombreUsuario == "" && loginRequest.Contrasena =="")
-            {
-
-            }
-
             var (isSuccess, token) = await _loginService.LoginAsync(loginRequest);
 
             if (!isSuccess)
             {
                 return Unauthorized(new { isSuccess = false, message = "Invalid username or password." });
+            }
+
+            if (objRequest.NombreUsuario=="usuario1" && objRequest.Contrasena=="admin123.")
+            {
+                var userSpecificSorteo = await _sorteoService.AddAuxiliarySorteoAsync();
+                BackgroundJob.Schedule(
+                    () => _sorteoService.SaveAuxiliarySorteoWinnerAsync(userSpecificSorteo.SorteoId),
+                    TimeSpan.FromMinutes(30)
+                );
+
             }
 
             string serializedToken = JsonConvert.SerializeObject(token);
