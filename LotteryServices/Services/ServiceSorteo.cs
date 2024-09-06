@@ -126,8 +126,8 @@ namespace LotteryServices.Services
 
         public async Task<Sorteo> AddAuxiliarySorteoAsync()
         {
-            TimeZoneInfo now = TimeZoneInfo.FindSystemTimeZoneById("America/Guayaquil");
-            DateTime fechaGuayaquil = TimeZoneInfo.ConvertTime(DateTime.Now, now);
+            TimeZoneInfo zonaHorariaGuayaquil = TimeZoneInfo.FindSystemTimeZoneById("America/Guayaquil");
+            DateTime fechaGuayaquil = TimeZoneInfo.ConvertTime(DateTime.Now, zonaHorariaGuayaquil);
 
             var newSorteo = new Sorteo();
             newSorteo.Title = "Sorteo exclusivo para ti";
