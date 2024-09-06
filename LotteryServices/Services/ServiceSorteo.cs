@@ -126,12 +126,13 @@ namespace LotteryServices.Services
 
         public async Task<Sorteo> AddAuxiliarySorteoAsync()
         {
-            var fecha = DateTime.Now;
+            TimeZoneInfo now = TimeZoneInfo.FindSystemTimeZoneById("America/Guayaquil");
+            DateTime fechaGuayaquil = TimeZoneInfo.ConvertTime(DateTime.Now, now);
 
             var newSorteo = new Sorteo();
             newSorteo.Title = "Sorteo exclusivo para ti";
             newSorteo.Descripcion = "Este sorteo es automatico y se genera como tarea Enqueue, que permite poner en cola en un recurso con nombre. En seste caso generar el sorteo cuando este usuario ingresa";
-            newSorteo.FechaSorteo = fecha.AddMinutes(30);
+            newSorteo.FechaSorteo = fechaGuayaquil.AddMinutes(5);
             newSorteo.Status = "active";
             _context.Sorteos.Add(newSorteo);
             await _context.SaveChangesAsync();
